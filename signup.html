@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="signup.css">
+    </head>
+
+    <body class="dark:bg-background-dark">
+        <div class="flex flex-col min-h-screen">
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-black/10 px-10 py-4 dark:border-white/10">
+                <div class="flex items-center gap-3 text-slate-900 dark:text-white">
+                    <svg class="h-6 w-6 text-[#137fec]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_6_535)">
+                            <path clip-rule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor" fill-rule="evenodd"></path>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_6_535"><rect fill="white" height="48" width="48"></rect></clipPath>
+                        </defs>
+                    </svg>
+                    <h2 class="text-xl font-bold">Campus Connect</h2>
+                </div>
+                <div class="flex flex-nowrap items-center gap-4">
+                    <a class="text-sm font-medium text-slate-600 transition-colors hover:text-[#137fec] dark:text-slate-300 dark:hover:text-[#137fec]" href="#">Home</a>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Already have an account?</p>
+                    <a id="login-btn" class="flex h-10 min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full bg-[#137fec]/10 px-5 text-sm font-bold text-[#137fec] transition-colors hover:bg-[#137fec]/20 dark:bg-[#137fec]/20 dark:hover:bg-[#137fec]/30">
+                        Log In
+                    </a>                
+                </div>
+            </header>
+
+            <main class="flex flex-1 items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div class="w-full max-w-md space-y-8">
+                    <div>
+                        <h2 class="mt-6 text-center text-3xl font-black text-slate-900 dark:text-white">Create your account</h2>
+                        <p class="mt-2 text-center text-sm text-slate-600 dark:text-slate-300">Join the community and start connecting.</p>
+                    </div>
+
+                    <form action="#" class="mt-8 space-y-6" method="POST">
+                        <div class="space-y-4 rounded-md shadow-sm">
+                            <div>
+                                <label class="sr-only" for="full-name">Full Name</label>
+                                <input class="form-input" id="full-name" name="name" placeholder="Full Name" required="" type="text"/>
+                            </div>
+                            <div>
+                                <label class="sr-only" for="email-address">Email address</label>
+                                <input autocomplete="email" class="form-input" id="email-address" name="email" placeholder="Email address" required="" type="email"/>
+                            </div>
+                            <div>
+                                <label class="sr-only" for="password">Password</label>
+                                <input autocomplete="current-password" class="form-input" id="password" name="password" placeholder="Password" required="" type="password"/>
+                            </div>
+                            <div>
+                                <label class="sr-only" for="college">College / University</label>
+                                <input class="form-input" id="college" name="college" placeholder="College / University" required="" type="text"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input class="h-4 w-4 rounded border-gray-300 text-[#137fec] focus:ring-[#137fec]" id="remember-me" name="remember-me" type="checkbox"/>
+                                <label class="ml-2 block text-sm text-slate-900 dark:text-slate-600" for="remember-me">I agree to the <a class="font-medium text-[#137fec] hover:text-[#137fec]/80" href="#">Terms</a> and <a class="font-medium text-[#137fec] hover:text-[#137fec]/80" href="#">Privacy Policy</a>.</label>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn-primary w-full" type="submit">Create Account</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+        <script src = "signup.js"></script>
+    </body>
+</html>
