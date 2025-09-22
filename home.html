@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Campus Connect</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Be+Vietnam+Pro:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="flex min-h-screen w-full">
+<aside class="w-80 p-6 flex-shrink-0">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-cover bg-center" style="background-image: url(assets/Sankalp.png);"></div>
+<h1 class="text-base font-bold text-gray-900 dark:text-white">Sankalp Thorat</h1>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary font-bold" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M230.93,220a8,8,0,0,1-6.93,4H32a8,8,0,0,1-6.92-12c15.23-26.33,38.7-45.21,66.09-54.16a72,72,0,1,1,73.66,0c27.39,8.95,50.86,27.83,66.09,54.16A8,8,0,0,1,230.93,220Z"></path></svg>
+<span>Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M216.22,124.89l-14.92-18.64a8,8,0,0,0-7.06-1.49,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-6,3.94l-2.64,23.72q-1.56,1.48-3,3L141.73,111a8,8,0,0,0-5.1-2.64,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-2.64-5.1l-22.58-2.51a91.32,91.32,0,0,1-6.23-15L81.1,97.35a8,8,0,0,0-1.75-5h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L47.05,80.1a91.57,91.57,0,0,1-6.23,15l22.58,2.51a8,8,0,0,0,5.1,2.64,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,2.64,5.1l2.51,22.58a91.32,91.32,0,0,1,15,6.23l17.74-14.19a8,8,0,0,0,1.75-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L100.45,40.2a91.57,91.57,0,0,1,15-6.23L138,56.55a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14,8,8,0,0,0,2.64-5.1L154.4,19.32a91.32,91.32,0,0,1,15,6.23l-14.19,17.74a8,8,0,0,0-1.74,5.48,73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,73.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0A8,8,0,0,0,128,80a48,48,0,1,0,48,48,48.05,48.05,0,0,0-48-48Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"></path></svg>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64ZM32,192V104H224v88Z"></path></svg>
+<span>Account</span>
+</a>
+</nav>
+</div>
+</aside>
+<main class="flex-1 max-w-[960px] mx-auto py-6 px-4">
+<h2 class="text-3xl font-bold text-gray-900 dark:text-white pb-4">Home</h2>
+<div class="mb-6">
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-800 border-transparent focus:ring-primary focus:border-primary placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white" placeholder="Search" type="text"/>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white dark:bg-gray-900/50 rounded-lg p-4 flex gap-6 items-center hover:shadow-lg transition-shadow duration-300">
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">The Future of Education: AI in the Classroom</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Explore how artificial intelligence is transforming teaching and learning, offering personalized experiences and new tools for educators.</p>
+</div>
+<div class="w-40 h-24 rounded-lg bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBVfgKoilksKnfa_3aRbHfZ9zZlMhbco5vtgkOV7TbOJCQTZHuOFdvZkyE1oEP2D1LgvUK6m5EgZGZrBYG2Xm4JHEA6zNG2BQcmwvkrW-XLT2eYkr1uiuNJOHbv77_zhtdz5FF3tmv3Y-1Vu6crVbS_KI7_cKw35OJfgJK4zorxHsXIPki7rxHEblvC9Im-abNIIjg5Kxb6Q8yjOaKyJ-ks5_wXe4Fu6tvKSpgW47Fqj5eryNcJP447vwyxiWdFrRRwQLfHp7KHrUCp');"></div>
+</div>
+<div class="bg-white dark:bg-gray-900/50 rounded-lg p-4 flex gap-6 items-center hover:shadow-lg transition-shadow duration-300">
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Campus Sustainability Initiatives</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Learn about the latest efforts to make our campus greener, from renewable energy projects to waste reduction programs.</p>
+</div>
+<div class="w-40 h-24 rounded-lg bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrHD-gEzKEU10WNziapxZn0kZUGXJq-HpLb-7HpglwRtwPIhvtSsgs9nXCauTC0riYXKSb4tCLOvRFGKDh4ZR8JZ_0inGIUjxAsrCwk_XBCmmD5pBq_ofJh-ERlyVxjauYrDKV6hv-FsgDz20Qa3uV9nfeSU_ekWFyYi9SzHTZ8kDYUp6s42bcnfUTGAcOqyIiAodXjg0oynMRmoaRP5a0nOCThxZqLJQgC33ekvqXmLD76IJG_Lg8Ofi_b4LkeB__tOYdqMuyV5u2');"></div>
+</div>
+<div class="bg-white dark:bg-gray-900/50 rounded-lg p-4 flex gap-6 items-center hover:shadow-lg transition-shadow duration-300">
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Student Startup Spotlight: Eco-Friendly Products</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Discover a student-led startup creating innovative, sustainable products and making a positive impact on the environment.</p>
+</div>
+<div class="w-40 h-24 rounded-lg bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuQHd22ZJK5NWvKqwHy_fzOZLY1AIoGSg_T9CDfRrgTiUuV7VUs945qNkYB0H23q6RM6fErqyqUjgr8j9XbyJ2ZluhIe4s2d68WTqnC6U2mj9Ih0bOVtUd6v_XaDFzltsMZf0C2I9iJYX5SGIq9sbumX_9eiuHHdpQ-22VZ1JCzd74s2qN2agspfvnzi5y7wAPiv6Aic_oSI-Ghla2KUehGj-GTbqGlquNlXYixJP7H6hJcj61x0VbLjO5kURgzXIby3QdCTVdui8r');"></div>
+</div>
+<div class="bg-white dark:bg-gray-900/50 rounded-lg p-4 flex gap-6 items-center hover:shadow-lg transition-shadow duration-300">
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Mental Health Resources for Students</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Access a comprehensive guide to mental health support services available on campus, including counseling, workshops, and peer support groups.</p>
+</div>
+<div class="w-40 h-24 rounded-lg bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxT5AJEY3_qHYdA2Y-kbKOCCpnbiD4jT5U_O4ON6yLyDXH9KbyBh1tPGIvhv1ch8cGv2bjGXZ16HXRzsnbDOl-Yg-NnOjzA7mnUZqMpIW8DsKiFkUFKBsErK9m9UdHONLP7vlNudRnx35LKwn0Heq0_L3yEVqQn1PBqgKyNOoVZ3lT6lV57Iewu5hpx9Wd3wrncQSfK21yZTVOiQ7OBkO1Ck6B9HTAIY2kl47GYC0I_u2TUMGivp8XgLyfQijXuAUEuiuiZ9jVXk6J');"></div>
+</div>
+<div class="bg-white dark:bg-gray-900/50 rounded-lg p-4 flex gap-6 items-center hover:shadow-lg transition-shadow duration-300">
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Alumni Success Stories: Career Paths After Graduation</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Read inspiring stories from alumni who have excelled in various fields, offering insights and advice for current students.</p>
+</div>
+<div class="w-40 h-24 rounded-lg bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSo-jwEfchfyk3ANR14jiEo52k2r5r4t8UIEnR5aSowNo0CaNo75WfrbxT4aYpQUGgR82136MFQgHlKDy5Zk9GpwLlDnvcyOslEQcY8UAQKdupBogQ1PPWd34RNIgneCDqP7umzg2abvU0CubRUtNixpnfKulcSRdanrohqBORtuT533pmp1LIK0ZYOI99-VRT9U-AT_7JjhNrMJ_1yS0aeOiM1g0Han5u6Yig2t3CqhnABB8pYTEYgNYPCJdHO3AVJHKCepgbqKNn');"></div>
+</div>
+</div>
+</main>
+<aside class="w-80 p-6 flex-shrink-0">
+<div class="sticky top-6">
+<div class="border-b border-gray-200 dark:border-gray-700 mb-4">
+<nav aria-label="Tabs" class="-mb-px flex space-x-6">
+<a class="border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm" href="#">Communities</a>
+<a class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm" href="#">Events</a>
+<a class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm" href="#">Groups</a>
+</nav>
+</div>
+<div class="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-12rem)]">
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Computer Science</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Electronics and Communication</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Sports</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Science</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Mathematics</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Social Sciences</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Health Sciences</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Education</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Law</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Design</a>
+<a class="block px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 font-medium" href="#">Media &amp; Communication</a>
+</div>
+</div>
+</aside>
+</div>
+
+</body></html>
