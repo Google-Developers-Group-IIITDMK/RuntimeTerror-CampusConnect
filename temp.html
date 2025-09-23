@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html class="dark" lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <title>AluminiConnect</title>
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+        <style type="text/tailwindcss">
+                :root {
+                    --primary-color: #804dd5;
+                    --secondary-color: #3B006A;
+                    --background-dark: #0D0C14;
+                    --text-color: #E2E8F0;
+                    --card-bg: #161521;
+                }
+                @keyframes subtle-float {
+                    0%,
+                    100% {
+                        transform: translateY(0);
+                    }
+                    50% {
+                        transform: translateY(-8px);
+                    }
+                }
+                .float-animation {
+                    animation: subtle-float 6s ease-in-out infinite;
+                }
+        </style>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        colors: {
+                            "primary": "var(--primary-color)",
+                            "secondary": "var(--secondary-color)",
+                            "background-dark": "var(--background-dark)",
+                            "text-color": "var(--text-color)",
+                            "card-bg": "var(--card-bg)"
+                        },
+                        fontFamily: {
+                            "display": ["Plus Jakarta Sans"]
+                        },
+                        borderRadius: {
+                            "DEFAULT": "0.75rem",
+                            "lg": "1rem",
+                            "xl": "1.5rem",
+                            "full": "9999px"
+                        },
+                    },
+                },
+            }
+        </script>
+    </head>
+
+    <body class="bg-background-dark font-display text-text-color">
+        <div class="flex flex-col min-h-screen">
+            <header class="sticky top-0 z-50 bg-background-dark/80 backdrop-blur-lg">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between h-24">
+                        <div class="flex items-center gap-3">
+                            <div class="text-primary">
+                                <svg class="w-9 h-9" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 14L24 4L42 14V34L24 44L6 34V14Z" stroke="currentColor" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M24 24L42 14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M24 44V24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M6 14L24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white">AlumniConnect</h2>
+                        </div>
+                        <nav class="hidden md:flex items-center gap-10">
+                            <a class="text-base font-medium text-text-color/70 hover:text-primary transition-colors" href="#">Home</a>
+                            <a class="text-base font-medium text-text-color/70 hover:text-primary transition-colors" href="#">About</a>
+                            <a class="text-base font-medium text-text-color/70 hover:text-primary transition-colors" href="#">Events</a>
+                        </nav>
+
+                        <div class="flex items-center gap-4">
+                            <a class="text-base font-medium text-text-color/70 hover:text-primary transition-colors" href="#">Login</a>
+                            <button class="bg-primary text-white font-bold text-base px-6 py-3 rounded-full hover:bg-primary/90 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/50">Create Account</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-grow">
+                <section class="relative overflow-hidden py-40 md:py-56">
+                    <div class="absolute inset-0 z-0">
+                        <div class="absolute inset-0 bg-background-dark"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(163,112,247,0.3),rgba(255,255,255,0))]"></div>
+                        <div class="absolute -bottom-1/2 left-0 right-0 h-1/2 bg-gradient-to-t from-background-dark to-transparent"></div>
+                    </div>
+
+                    <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+                        <h1 class="text-5xl md:text-7xl font-extrabold text-white !leading-tight tracking-tight">Unlock Your Future. <span class="text-primary">Connect with Mentors.</span></h1>
+                        <p class="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-text-color/80">Join an exclusive network for college students and alumni. Forge career-defining relationships and access unparalleled opportunities.</p>
+                        <div class="mt-12 float-animation">
+                            <div class="relative inline-flex group">
+                                <div class="absolute transition-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100 group-hover:-inset-1 group-hover:duration-200 animate-tilt"></div>
+                                <a class="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gray-900 font-pj rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900" href="#" role="button" title="Get quote now">Join Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="py-20 sm:py-28">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center">
+                            <h2 class="text-4xl md:text-5xl font-bold text-white">Why AlumniConnect?</h2>
+                            <p class="mt-4 max-w-2xl mx-auto text-lg text-text-color/70">A premium ecosystem designed for ambitious minds.</p>
+                        </div>
+
+                        <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+                            <div class="text-center p-8 bg-card-bg rounded-xl border border-white/10 shadow-lg hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-300">
+                                <div class="flex items-center justify-center h-20 w-20 rounded-full bg-secondary text-primary mx-auto">
+                                    <svg class="feather feather-users" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="40" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="mt-8 text-2xl font-bold text-white">Elite Networking</h3>
+                                <p class="mt-3 text-text-color/70">Connect with a curated community of high-achieving students and accomplished alumni.</p>
+                            </div>
+
+                            <div class="text-center p-8 bg-card-bg rounded-xl border border-white/10 shadow-lg hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-300">
+                                <div class="flex items-center justify-center h-20 w-20 rounded-full bg-secondary text-primary mx-auto">
+                                    <svg class="feather feather-briefcase" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="40" xmlns="http://www.w3.org/2000/svg">
+                                        <rect height="14" rx="2" ry="2" width="20" x="2" y="7"></rect>
+                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="mt-8 text-2xl font-bold text-white">Career Acceleration</h3>
+                                <p class="mt-3 text-text-color/70">Access exclusive internships, job listings, and career guidance from industry leaders.</p>
+                            </div>
+
+                            <div class="text-center p-8 bg-card-bg rounded-xl border border-white/10 shadow-lg hover:shadow-primary/20 hover:-translate-y-2 transition-all duration-300">
+                                <div class="flex items-center justify-center h-20 w-20 rounded-full bg-secondary text-primary mx-auto">
+                                    <svg class="feather feather-award" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="40" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="8" r="7"></circle>
+                                        <polyline points="8.21 13.89 7 23 12 17 17 23 15.79 13.88"></polyline>
+                                    </svg>
+                                </div>
+                                <h3 class="mt-8 text-2xl font-bold text-white">Mentorship Programs</h3>
+                                <p class="mt-3 text-text-color/70">Receive personalized guidance through structured mentorship with experienced alumni.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-card-bg/50 py-20 sm:py-28">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="text-center">
+                            <h2 class="text-4xl md:text-5xl font-bold text-white">Success Stories</h2>
+                            <p class="mt-4 max-w-2xl mx-auto text-lg text-text-color/70">Discover the impact AlumniConnect has had on our members.</p>
+                        </div>
+
+                        <div class="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="bg-card-bg p-8 rounded-lg shadow-lg border border-white/10">
+                                <div class="flex items-center gap-4">
+                                    <img alt="Sophia Carter" class="w-16 h-16 rounded-full object-cover border-2 border-primary" src="assets/WhatsApp Image 2025-09-22 at 01.59.27_7d81959f.jpg"/>
+                                    <div>
+                                        <h4 class="font-bold text-white text-lg">Divyansh Thakur</h4>
+                                        <p class="text-sm text-primary">Student, Computer Science</p>
+                                    </div>
+                                </div>
+                                <p class="mt-6 text-text-color/80 italic">"The mentorship I received through AlumniConnect was a game-changer. My mentor, a senior engineer at a top tech company, helped me navigate the internship process and land my dream role."</p>
+                            </div>
+                        <div class="bg-card-bg p-8 rounded-lg shadow-lg border border-white/10">
+
+                        <div class="flex items-center gap-4">
+                            <img alt="Ethan Bennett" class="w-16 h-16 rounded-full object-cover border-2 border-primary" src="assets/WhatsApp Image 2025-09-23 at 22.30.04_4e656b44.jpg"/>
+                            <div>
+                                <h4 class="font-bold text-white text-lg">Paarth Batra</h4>
+                                <p class="text-sm text-primary">Intern, Goldman Sachs</p>
+                            </div>
+                        </div>
+                        <p class="mt-6 text-text-color/80 italic">"Attending an exclusive networking event organized by AlumniConnect led to an internship offer. The connections you make here are simply invaluable."</p>
+                        </div>
+                        <div class="bg-card-bg p-8 rounded-lg shadow-lg border border-white/10">
+                        <div class="flex items-center gap-4">
+                        <img alt="Olivia Hayes" class="w-16 h-16 rounded-full object-cover border-2 border-primary" src="assets/1683377320934.jpeg"/>
+                        <div>
+                        <h4 class="font-bold text-white text-lg">Arpit Diwedi</h4>
+                        <p class="text-sm text-primary">Alumni, DecoverAI</p>
+                        </div>
+                        </div>
+                        <p class="mt-6 text-text-color/80 italic">"As an alumna, giving back is important. This platform allows me to mentor the next generation and stay connected with my university's brightest talents."</p>
+                        </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="bg-card-bg border-t border-white/10">
+                <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div class="flex items-center gap-3">
+                            <div class="text-primary">
+                                <svg class="w-8 h-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 14L24 4L42 14V34L24 44L6 34V14Z" stroke="currentColor" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M24 24L42 14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M24 44V24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                    <path d="M6 14L24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-xl font-bold text-white">AlumniConnect</h2>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                            <a class="text-sm text-text-color/70 hover:text-primary transition-colors" href="#">About</a>
+                            <a class="text-sm text-text-color/70 hover:text-primary transition-colors" href="#">Contact</a>
+                            <a class="text-sm text-text-color/70 hover:text-primary transition-colors" href="#">Privacy Policy</a>
+                            <a class="text-sm text-text-color/70 hover:text-primary transition-colors" href="#">Terms of Service</a>
+                        </div>
+                        <p class="text-sm text-text-color/50">© 2025 AlumniConnect. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </body>
+</html>
