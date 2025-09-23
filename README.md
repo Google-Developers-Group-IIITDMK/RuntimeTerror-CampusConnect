@@ -1,2 +1,0 @@
-# RuntimeTerror-CampusConnect
-#test
