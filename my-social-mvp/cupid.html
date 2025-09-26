@@ -115,9 +115,9 @@
 <label class="sr-only" for="crush-name">Enter your crush's name</label>
 <input class="form-input w-full px-4 py-3 rounded-md bg-white/80 dark:bg-background-dark/80 border-zinc-300 dark:border-zinc-700 focus:ring-primary focus:border-primary text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 backdrop-blur-sm" id="crush-name" placeholder="Enter your crush's name..." type="text"/>
 </div>
-<button class="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
-<span class="material-symbols-outlined">send</span>
-<span>Submit</span>
+<button id="submit-crush" class="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
+  <span class="material-symbols-outlined">send</span>
+  <span>Submit</span>
 </button>
 </div>
 </div>
@@ -210,5 +210,136 @@
         </div>
     </div>
 </div> -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://pbuyszhhtmgaubzylmoh.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA"; 
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // helper: returns current user id (null if not signed in)
+  async function getCurrentUserId() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) console.error("getUser error:", error);
+    return data?.user?.id ?? null;
+  }
+
+  // find a profile by username (case-insensitive)
+  async function findUserByUsername(username) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, full_name')
+      .ilike('username', username)
+      .limit(1);
+    if (error) {
+      console.error("findUserByUsername error:", error);
+      return null;
+    }
+    return data?.[0] ?? null;
+  }
+
+  // show a quick modal animation (creates DOM elements dynamically)
+  function showMatchModal(displayName) {
+    const overlay = document.createElement('div');
+    overlay.style = `
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.45); z-index:9999; padding:20px;
+    `;
+    overlay.innerHTML = `
+      <div style="width:100%; max-width:520px; border-radius:14px; padding:28px; text-align:center; background:linear-gradient(135deg,#fff 0%, #ffe7ec 100%); color:#111; box-shadow:0 20px 60px rgba(0,0,0,0.25);">
+        <div style="font-size:56px; color: #f42547; margin-bottom:8px;">❤</div>
+        <h3 style="font-size:22px; margin:6px 0 4px; font-weight:800;">It's a Match!</h3>
+        <p style="margin:6px 0 12px;">You and <strong style="color:#d81b48">${escapeHtml(displayName)}</strong> both like each other 💘</p>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
+          <button id="match-send-msg" style="padding:10px 16px; border-radius:10px; background:#f42547; color:white; font-weight:700; border:0; cursor:pointer;">Send Secret Message</button>
+          <button id="match-close" style="padding:10px 16px; border-radius:10px; background:transparent; border:2px solid #eee; cursor:pointer;">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // handlers
+    overlay.querySelector('#match-close').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#match-send-msg').addEventListener('click', async () => {
+      overlay.remove();
+      const message = prompt("Write your secret message (one-time):");
+      if (!message) return;
+      // For now, we don't know match id or recipient id in this scope.
+      // We'll call sendSecretMessage from the caller and pass match/recipient.
+      // replace this with proper flow after integrating match creation.
+      alert("Secret message flow will be implemented next (server checks apply).");
+    });
+
+    // auto remove after 6s if user doesn't interact
+    setTimeout(() => { if (document.body.contains(overlay)) overlay.remove(); }, 6000);
+  }
+
+  // small escaping helper
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"'`]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;'}[s]));
+  }
+
+  // main handler
+  document.getElementById('submit-crush').addEventListener('click', async function () {
+    const raw = document.getElementById('crush-name').value.trim();
+    if (!raw) { alert("Enter your crush's username"); return; }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) { alert("You must be signed in to submit a crush"); return; }
+
+    // find target user
+    const crushUser = await findUserByUsername(raw);
+    if (!crushUser) { alert("No user found with that username"); return; }
+    if (crushUser.id === currentUserId) { alert("You can't add yourself"); return; }
+
+    // insert crush (RLS will ensure only current user can insert their own)
+    const { data: insertData, error: insertError } = await supabase
+      .from('crushes')
+      .insert([{ user_id: currentUserId, crush_user_id: crushUser.id }])
+      .select();
+
+    // ignore duplicate unique violation (user already added same crush)
+    if (insertError) {
+      console.error("Insert crush error:", insertError);
+      alert("Insert failed: " + insertError.message);
+      return;
+    }
+
+    // check for mutual
+    const { data: mutual, error: mutualError } = await supabase
+      .from('crushes')
+      .select('id')
+      .eq('user_id', crushUser.id)
+      .eq('crush_user_id', currentUserId)
+      .limit(1);
+
+    if (mutualError) {
+      console.error("mutual check error:", mutualError);
+      alert("Error checking match. Try later.");
+      return;
+    }
+
+    if (mutual && mutual.length > 0) {
+      // A mutual crush -> create a match (normalize order to avoid dupes)
+      const userA = currentUserId < crushUser.id ? currentUserId : crushUser.id;
+      const userB = currentUserId < crushUser.id ? crushUser.id : currentUserId;
+
+      const { data: matchData, error: matchError } = await supabase
+        .from('matches')
+        .insert([{ user_a: userA, user_b: userB }])
+        .select();
+
+      if (matchError && matchError.code !== '23505') {
+        console.error("match insert error:", matchError);
+      } else {
+        // show match UI using the crush user's display name
+        showMatchModal(crushUser.username || crushUser.full_name || 'Someone');
+      }
+    } else {
+      alert("Crush saved! We'll let you know if it becomes mutual ❤️");
+    }
+
+    // clear input
+    document.getElementById('crush-name').value = '';
+  });
+</script>
 </body></html>
