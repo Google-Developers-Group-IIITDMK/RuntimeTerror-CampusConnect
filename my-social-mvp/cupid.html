@@ -216,14 +216,12 @@
   const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA"; 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // helper: returns current user id (null if not signed in)
   async function getCurrentUserId() {
     const { data, error } = await supabase.auth.getUser();
     if (error) console.error("getUser error:", error);
     return data?.user?.id ?? null;
   }
 
-  // find a profile by username (case-insensitive)
   async function findUserByUsername(username) {
     const { data, error } = await supabase
       .from('profiles')
@@ -237,7 +235,6 @@
     return data?.[0] ?? null;
   }
 
-  // show a quick modal animation (creates DOM elements dynamically)
   function showMatchModal(displayName) {
     const overlay = document.createElement('div');
     overlay.style = `
@@ -257,28 +254,24 @@
     `;
     document.body.appendChild(overlay);
 
-    // handlers
     overlay.querySelector('#match-close').addEventListener('click', () => overlay.remove());
     overlay.querySelector('#match-send-msg').addEventListener('click', async () => {
       overlay.remove();
       const message = prompt("Write your secret message (one-time):");
       if (!message) return;
-      // For now, we don't know match id or recipient id in this scope.
-      // We'll call sendSecretMessage from the caller and pass match/recipient.
-      // replace this with proper flow after integrating match creation.
+    
       alert("Secret message flow will be implemented next (server checks apply).");
     });
 
-    // auto remove after 6s if user doesn't interact
     setTimeout(() => { if (document.body.contains(overlay)) overlay.remove(); }, 6000);
   }
 
-  // small escaping helper
+  
   function escapeHtml(str) {
     return String(str).replace(/[&<>"'`]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;'}[s]));
   }
 
-  // main handler
+  
   document.getElementById('submit-crush').addEventListener('click', async function () {
     const raw = document.getElementById('crush-name').value.trim();
     if (!raw) { alert("Enter your crush's username"); return; }
@@ -286,25 +279,25 @@
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) { alert("You must be signed in to submit a crush"); return; }
 
-    // find target user
+    
     const crushUser = await findUserByUsername(raw);
     if (!crushUser) { alert("No user found with that username"); return; }
     if (crushUser.id === currentUserId) { alert("You can't add yourself"); return; }
 
-    // insert crush (RLS will ensure only current user can insert their own)
+    
     const { data: insertData, error: insertError } = await supabase
       .from('crushes')
       .insert([{ user_id: currentUserId, crush_user_id: crushUser.id }])
       .select();
 
-    // ignore duplicate unique violation (user already added same crush)
+    
     if (insertError) {
       console.error("Insert crush error:", insertError);
       alert("Insert failed: " + insertError.message);
       return;
     }
 
-    // check for mutual
+    
     const { data: mutual, error: mutualError } = await supabase
       .from('crushes')
       .select('id')
@@ -319,7 +312,7 @@
     }
 
     if (mutual && mutual.length > 0) {
-      // A mutual crush -> create a match (normalize order to avoid dupes)
+      
       const userA = currentUserId < crushUser.id ? currentUserId : crushUser.id;
       const userB = currentUserId < crushUser.id ? crushUser.id : currentUserId;
 
@@ -331,14 +324,13 @@
       if (matchError && matchError.code !== '23505') {
         console.error("match insert error:", matchError);
       } else {
-        // show match UI using the crush user's display name
+        
         showMatchModal(crushUser.username || crushUser.full_name || 'Someone');
       }
     } else {
       alert("Crush saved! We'll let you know if it becomes mutual ❤️");
     }
 
-    // clear input
     document.getElementById('crush-name').value = '';
   });
 </script>
