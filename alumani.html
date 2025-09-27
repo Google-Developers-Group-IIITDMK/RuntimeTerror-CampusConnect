@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Directory - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 1. GLOBAL STYLES & SETUP */
+        *, *::before, *::after {
+          margin: 0; padding: 0; box-sizing: border-box;
+        }
+        :root {
+          --color-background: #100E19; --color-primary: #8A4FFF; --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27; --color-border: #2A2836; --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E; --color-white: #FFFFFF; --color-green-tag: #27ae60;
+          --sidebar-collapsed-width: 90px; --sidebar-expanded-width: 280px;
+        }
+        body {
+          font-family: 'Poppins', sans-serif; color: var(--text-primary); background-color: var(--color-background);
+          background-image: radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%), radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* 2. COLLAPSIBLE SIDEBAR STYLES (Unchanged) */
+        .sidebar-left {
+          position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background);
+          padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow: hidden;
+          width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border);
+        }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+        .btn-logout:hover { background-color: var(--color-primary-hover); }
+
+        /* 3. MAIN CONTENT WRAPPER */
+        .main-content-wrapper {
+          margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-left:hover ~ .main-content-wrapper { margin-left: var(--sidebar-expanded-width); }
+        .alumni-feed { max-width: 1200px; margin: 0 auto; }
+        .alumni-feed > h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+        /* 4. FILTER BAR (Unchanged) */
+        .filter-bar {
+            display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; background-color: var(--color-card-background);
+            border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--color-border);
+        }
+        .filter-group { flex: 1 1 180px; display: flex; flex-direction: column; gap: 0.5rem; }
+        .filter-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); padding-left: 0.5rem; }
+        .filter-group input, .filter-group select {
+            width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border);
+            color: var(--text-primary); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem;
+        }
+        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: var(--color-primary); }
+        
+        /* 5. NEW: ALUMNI LIST & PROFILE ROW STYLES */
+        .alumni-list { display: flex; flex-direction: column; gap: 1rem; }
+        .alumni-profile-row {
+            display: flex; align-items: center; gap: 1.5rem; background-color: var(--color-card-background);
+            padding: 1.5rem; border-radius: 12px; border: 1px solid var(--color-border);
+            transition: all 0.2s ease-in-out;
+        }
+        .alumni-profile-row:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border-color: var(--color-primary);
+        }
+        .profile-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            object-fit: cover; flex-shrink: 0;
+        }
+        .profile-details { flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .profile-header { display: flex; align-items: center; justify-content: space-between; }
+        .profile-header-info { display: flex; align-items: baseline; gap: 0.75rem; }
+        .profile-name { font-size: 1.25rem; font-weight: 600; }
+        .profile-grad-year { font-size: 0.9rem; color: var(--text-secondary); }
+        .profile-job { font-weight: 500; font-size: 1rem; }
+        .availability-badge {
+            font-size: 0.75rem; font-weight: 600; color: var(--color-white); background-color: var(--color-green-tag);
+            padding: 0.25rem 0.75rem; border-radius: 99px; flex-shrink: 0;
+        }
+        .skills-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .skill-tag {
+            font-size: 0.75rem; background-color: var(--color-border); color: var(--text-secondary);
+            padding: 0.25rem 0.75rem; border-radius: 99px;
+        }
+        .profile-actions { display: flex; gap: 1rem; flex-shrink: 0; }
+        .profile-actions a, .profile-actions button {
+            padding: 0.75rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer;
+            border: none; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn-linkedin { background-color: var(--color-primary); color: var(--color-white); }
+        .btn-linkedin:hover { background-color: var(--color-primary-hover); }
+        .btn-linkedin svg { width: 16px; height: 16px; }
+        .btn-message { background-color: var(--color-border); color: var(--text-secondary); }
+        .btn-message:hover { background-color: var(--color-primary); color: var(--text-primary); }
+        #no-results { color: var(--text-secondary); text-align: center; padding: 3rem; }
+
+    </style>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <div class="profile-toggle">
+            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <div class="profile-info">
+              <h3 class="profile-name">Alex Chen</h3>
+              <p class="profile-title">Senior, Computer Science</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="home.html" class="nav-link"><svg></svg><span>Home</span></a></li>
+                <li><a href="explore.html" class="nav-link"><svg></svg><span>Explore</span></a></li>
+                <li><a href="network.html" class="nav-link"><svg></svg><span>Network</span></a></li>
+                <li><a href="message.html" class="nav-link"><svg></svg><span>Message</span></a></li>
+                <li><a href="alumni.html" class="nav-link active"><svg></svg><span>Alumni</span></a></li>
+                <li><a href="code-connect.html" class="nav-link"><svg></svg><span>Code & Connect</span></a></li>
+                <li><a href="profile.html" class="nav-link"><svg></svg><span>Profile</span></a></li>
+              </ul>
+            </nav>
+            <a href="#" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content-wrapper">
+        <main class="alumni-feed">
+            <h1>Alumni Directory</h1>
+
+            <div class="filter-bar">
+                <div class="filter-group"><label for="name-search">Name</label><input type="text" id="name-search" placeholder="e.g., Priya Sharma"></div>
+                <div class="filter-group"><label for="year-select">Graduation Year</label><select id="year-select"><option value="">All Years</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option></select></div>
+                <div class="filter-group"><label for="major-select">Major</label><select id="major-select"><option value="">All Majors</option><option value="Computer Science">Computer Science</option><option value="Electronics & Comms">Electronics & Comms</option><option value="Mechanical">Mechanical</option><option value="Business Admin">Business Admin</option></select></div>
+                <div class="filter-group"><label for="company-search">Company</label><input type="text" id="company-search" placeholder="e.g., Google"></div>
+                <div class="filter-group"><label for="sort-select">Sort By</label><select id="sort-select"><option value="name-asc">Name (A-Z)</option><option value="year-desc">Year (Newest First)</option><option value="year-asc">Year (Oldest First)</option></select></div>
+            </div>
+
+            <div class="alumni-list" id="alumni-list">
+                 </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const alumniData = [
+                { name: 'Priya Sharma', gradYear: 2021, major: 'Computer Science', company: 'Google', title: 'Software Engineer II', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/priyasharma', availability: 'Open to Mentoring', skills: ['Java', 'Cloud Computing', 'Kubernetes']},
+                { name: 'Rohan Gupta', gradYear: 2020, major: 'Electronics & Comms', company: 'Microsoft', title: 'Product Manager', location: 'Hyderabad', linkedinUrl: 'https://linkedin.com/in/rohan', availability: 'Hiring at my Company', skills: ['Product Strategy', 'Agile', 'UX']},
+                { name: 'Aisha Khan', gradYear: 2022, major: 'Business Admin', company: 'Deloitte', title: 'Business Analyst', location: 'Mumbai', linkedinUrl: 'https://linkedin.com/in/aishak', availability: '', skills: ['Data Analysis', 'SQL', 'Tableau']},
+                { name: 'Vikram Singh', gradYear: 2021, major: 'Mechanical', company: 'Tata Motors', title: 'Design Engineer', location: 'Pune', linkedinUrl: 'https://linkedin.com/in/vikramsingh', availability: '', skills: ['AutoCAD', 'CATIA', 'Prototyping']},
+                { name: 'Sneha Reddy', gradYear: 2023, major: 'Computer Science', company: 'Amazon', title: 'Data Engineer', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/snehareddy', availability: 'Open to Mentoring', skills: ['Python', 'AWS', 'Spark', 'Airflow']},
+                { name: 'Arjun Mehta', gradYear: 2020, major: 'Computer Science', company: 'Google', title: 'Senior AI Researcher', location: 'San Francisco', linkedinUrl: 'https://linkedin.com/in/arjunmehta', availability: 'Hiring at my Company', skills: ['Machine Learning', 'TensorFlow', 'NLP']},
+                { name: 'Neha Desai', gradYear: 2024, major: 'Electronics & Comms', company: 'Intel', title: 'VLSI Design Intern', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/nehadesai', availability: '', skills: ['Verilog', 'SystemVerilog', 'UVM']},
+                { name: 'Karan Malhotra', gradYear: 2022, major: 'Computer Science', company: 'Netflix', title: 'Full-Stack Developer', location: 'Remote', linkedinUrl: 'https://linkedin.com/in/karanm', availability: '', skills: ['React', 'Node.js', 'GraphQL', 'Microservices']},
+            ];
+
+            const alumniList = document.getElementById('alumni-list');
+            const nameInput = document.getElementById('name-search');
+            const yearSelect = document.getElementById('year-select');
+            const majorSelect = document.getElementById('major-select');
+            const companyInput = document.getElementById('company-search');
+            const sortSelect = document.getElementById('sort-select');
+
+            const renderAlumni = (data) => {
+                alumniList.innerHTML = '';
+                if (data.length === 0) {
+                    alumniList.innerHTML = `<p id="no-results">No alumni found matching your criteria.</p>`;
+                    return;
+                }
+                data.forEach(alumnus => {
+                    const skillsHtml = alumnus.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('');
+                    const availabilityHtml = alumnus.availability ? `<span class="availability-badge">${alumnus.availability}</span>` : '';
+
+                    const row = document.createElement('div');
+                    row.className = 'alumni-profile-row';
+                    row.innerHTML = `
+                        <img src="https://picsum.photos/seed/${alumnus.name.replace(/\s/g, '')}/80" alt="${alumnus.name}" class="profile-avatar">
+                        <div class="profile-details">
+                            <div class="profile-header">
+                                <div class="profile-header-info">
+                                    <h3 class="profile-name">${alumnus.name}</h3>
+                                    <span class="profile-grad-year">Class of ${alumnus.gradYear}</span>
+                                </div>
+                                ${availabilityHtml}
+                            </div>
+                            <p class="profile-job">${alumnus.title} @ ${alumnus.company}</p>
+                            <div class="skills-container">${skillsHtml}</div>
+                        </div>
+                        <div class="profile-actions">
+                             <button class="btn-message">Message</button>
+                             <a href="${alumnus.linkedinUrl}" target="_blank" class="btn-linkedin">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-11 5H5v10h3V8zm-1.5-2.25a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM18 8h-2.5a3.5 3.5 0 0 0-3.5 3.5V18h3v-4.75A1.75 1.75 0 0 1 15.25 11h.25a1.75 1.75 0 0 1 1.75 1.75V18h3v-6.5A3.5 3.5 0 0 0 18 8z"></path></svg>
+                                LinkedIn
+                            </a>
+                        </div>
+                    `;
+                    alumniList.appendChild(row);
+                });
+            };
+
+            const filterAndRender = () => {
+                const nameQuery = nameInput.value.toLowerCase().trim();
+                const yearQuery = yearSelect.value;
+                const majorQuery = majorSelect.value;
+                const companyQuery = companyInput.value.toLowerCase().trim();
+                const sortQuery = sortSelect.value;
+
+                let processedData = alumniData.filter(alumnus => {
+                    return (
+                        alumnus.name.toLowerCase().includes(nameQuery) &&
+                        (!yearQuery || alumnus.gradYear.toString() === yearQuery) &&
+                        (!majorQuery || alumnus.major === majorQuery) &&
+                        alumnus.company.toLowerCase().includes(companyQuery)
+                    );
+                });
+
+                if (sortQuery === 'name-asc') {
+                    processedData.sort((a, b) => a.name.localeCompare(b.name));
+                } else if (sortQuery === 'year-desc') {
+                    processedData.sort((a, b) => b.gradYear - a.gradYear);
+                } else if (sortQuery === 'year-asc') {
+                    processedData.sort((a, b) => a.gradYear - b.gradYear);
+                }
+
+                renderAlumni(processedData);
+            };
+
+            // --- EVENT LISTENERS ---
+            [nameInput, companyInput].forEach(el => el.addEventListener('input', filterAndRender));
+            [yearSelect, majorSelect, sortSelect].forEach(el => el.addEventListener('change', filterAndRender));
+            
+            // --- INITIAL PAGE LOAD ---
+            filterAndRender();
+        });
+    </script>
+</body>
+</html>
