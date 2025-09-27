@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Your Profile - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --color-danger: #e74c3c;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; color: var(--text-primary); background-color: var(--color-background); -webkit-font-smoothing: antialiased; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        svg { vertical-align: middle; }
+        
+        /* Sidebar Styles (Copied from profile.html) */
+        .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; overflow-x: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link svg { color: var(--text-secondary); }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+
+        /* Main Content Wrapper */
+        .main-content-wrapper { margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out; min-height: 100vh; }
+        .sidebar-left:hover ~ .main-content-wrapper { margin-left: var(--sidebar-expanded-width); }
+
+        /* Form Styles */
+        .form-container { max-width: 900px; margin: 0 auto; }
+        .form-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; }
+        .form-card h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; text-align: center; }
+        fieldset { border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        legend { font-size: 1.25rem; font-weight: 600; color: var(--color-primary); padding: 0 0.75rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--text-primary); padding: 0.75rem 1rem; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--color-primary); }
+        /* Style for file inputs */
+        .form-group input[type="file"] { padding: 0.5rem; }
+        .form-group input[type="file"]::file-selector-button { background-color: var(--color-border); color: var(--text-primary); border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+        .form-group input[type="file"]::file-selector-button:hover { background-color: var(--color-primary); }
+        .form-actions { margin-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-primary { background-color: var(--color-primary); color: var(--color-white); }
+        .btn-primary:disabled { background-color: var(--color-border); cursor: not-allowed; }
+        .btn-secondary { background-color: transparent; border: 1px solid var(--color-border); color: var(--text-primary); }
+    </style>
+</head>
+<body>
+     <aside id="sidebar" class="sidebar-left">
+        <div class="profile-toggle">
+            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <div class="profile-info">
+              <h3 class="profile-name">Alex Chen</h3>
+              <p class="profile-title">Senior, Computer Science</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="home.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
+                    <span>Home</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="network.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
+                    <span>Network</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="alumni.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+                <li><a href="profile.html" class="nav-link active">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
+                  <span>Profile</span>
+                </a></li>
+              </ul>
+            </nav>
+            <a href="#" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content-wrapper">
+        <div class="form-container">
+            <div class="form-card">
+                <h1>Edit Your Profile</h1>
+                <form id="profile-form">
+                    
+                    <fieldset id="personal-section">
+                        <legend>Personal Information</legend>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="full-name">Full Name</label><input type="text" id="full-name" required></div>
+                            <div class="form-group"><label for="username">Username</label><input type="text" id="username" required></div>
+                            <div class="form-group full-width"><label for="title">Title</label><input type="text" id="title" placeholder="e.g., Software Engineer | AI Enthusiast"></div>
+                            <div class="form-group full-width"><label for="about">About</label><textarea id="about" rows="3" placeholder="Tell us a little about yourself..."></textarea></div>
+                            <div class="form-group full-width"><label for="location">Location</label><input type="text" id="location" placeholder="e.g., Bengaluru, India"></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="images-section">
+                        <legend>Profile Images</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="avatar-file">Profile Picture</label>
+                                <input type="file" id="avatar-file" accept="image/png, image/jpeg">
+                            </div>
+                            <div class="form-group">
+                                <label for="banner-file">Banner Image</label>
+                                <input type="file" id="banner-file" accept="image/png, image/jpeg">
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="links-section">
+                        <legend>Social & Coding Links</legend>
+                        <div class="form-grid">
+                             <div class="form-group full-width"><label for="linkedin-url">LinkedIn Profile URL</label><input type="url" id="linkedin-url" placeholder="https://www.linkedin.com/in/yourname"></div>
+                             <div class="form-group full-width"><label for="github-url">GitHub Profile URL</label><input type="url" id="github-url" placeholder="https://github.com/yourusername"></div>
+                             <div class="form-group full-width"><label for="leetcode-url">LeetCode Profile URL</label><input type="url" id="leetcode-url" placeholder="https://leetcode.com/yourusername"></div>
+                             <div class="form-group full-width"><label for="codeforces-url">Codeforces Profile URL</label><input type="url" id="codeforces-url" placeholder="https://codeforces.com/profile/yourusername"></div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <a href="profile.html" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" id="save-button" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const SUPABASE_URL = 'https://pbuyszhhtmgaubzylmoh.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA';
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            const profileForm = document.getElementById('profile-form');
+            const saveButton = document.getElementById('save-button');
+            let user = null;
+
+            async function loadProfileData() {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    alert('You must be logged in to edit your profile.');
+                    return;
+                }
+                user = session.user;
+
+                const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+                if (data) {
+                    document.getElementById('full-name').value = data.full_name || '';
+                    document.getElementById('username').value = data.username || '';
+                    document.getElementById('title').value = data.title || '';
+                    document.getElementById('about').value = data.about || '';
+                    document.getElementById('location').value = data.location || '';
+                    document.getElementById('linkedin-url').value = data.linkedin_url || '';
+                    document.getElementById('github-url').value = data.github_url || '';
+                    document.getElementById('leetcode-url').value = data.leetcode_url || '';
+                    document.getElementById('codeforces-url').value = data.codeforces_url || '';
+                }
+            }
+            
+            profileForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
+
+                // --- Handle File Uploads ---
+                const avatarFile = document.getElementById('avatar-file').files[0];
+                const bannerFile = document.getElementById('banner-file').files[0];
+                let avatar_url = null;
+                let banner_url = null;
+
+                // Upload avatar if selected
+                if (avatarFile) {
+                    const { data, error } = await supabase.storage
+                        .from('avatars') // NOTE: Make sure you have a bucket named 'avatars'
+                        .upload(`${user.id}/${avatarFile.name}`, avatarFile, {
+                            cacheControl: '3600',
+                            upsert: true, // Overwrite existing file
+                        });
+                    if (error) {
+                        alert('Error uploading avatar: ' + error.message);
+                    } else {
+                        // Get public URL
+                        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(data.path);
+                        avatar_url = publicUrl;
+                    }
+                }
+                
+                // Upload banner if selected
+                if (bannerFile) {
+                    // Similar logic for banner upload into a 'banners' bucket
+                }
+
+                // --- Prepare Profile Data ---
+                const updates = {
+                    id: user.id,
+                    full_name: document.getElementById('full-name').value,
+                    username: document.getElementById('username').value,
+                    title: document.getElementById('title').value,
+                    about: document.getElementById('about').value,
+                    location: document.getElementById('location').value,
+                    linkedin_url: document.getElementById('linkedin-url').value,
+                    github_url: document.getElementById('github-url').value,
+                    leetcode_url: document.getElementById('leetcode-url').value,
+                    codeforces_url: document.getElementById('codeforces-url').value,
+                    updated_at: new Date(),
+                };
+
+                // Add image URLs to updates object if they were uploaded
+                if (avatar_url) updates.avatar_url = avatar_url;
+                if (banner_url) updates.banner_url = banner_url;
+                
+                // --- Save Profile Data ---
+                const { error } = await supabase.from('profiles').upsert(updates);
+
+                if (error) {
+                    alert('Error updating profile: ' + error.message);
+                } else {
+                    alert('Profile saved successfully!');
+                    window.location.href = 'profile.html';
+                }
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save Changes';
+            });
+
+            loadProfileData();
+        });
+    </script>
+</body>
+</html>
