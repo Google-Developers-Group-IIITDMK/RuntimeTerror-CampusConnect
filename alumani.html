@@ -11,26 +11,47 @@
     <style>
         /* 1. GLOBAL STYLES & SETUP */
         *, *::before, *::after {
-          margin: 0; padding: 0; box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
+
         :root {
-          --color-background: #100E19; --color-primary: #8A4FFF; --color-primary-hover: #7B46E5;
-          --color-card-background: #1C1A27; --color-border: #2A2836; --text-primary: #EAEAEB;
-          --text-secondary: #9A9A9E; --color-white: #FFFFFF; --color-green-tag: #27ae60;
-          --sidebar-collapsed-width: 90px; --sidebar-expanded-width: 280px;
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
         }
+
         body {
-          font-family: 'Poppins', sans-serif; color: var(--text-primary); background-color: var(--color-background);
-          background-image: radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%), radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+          font-family: 'Poppins', sans-serif;
+          color: var(--text-primary);
+          background-color: var(--color-background);
+          background-image: 
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
+
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* 2. COLLAPSIBLE SIDEBAR STYLES (Unchanged) */
+        /* 2. COLLAPSIBLE SIDEBAR STYLES (Consistent) */
         .sidebar-left {
-          position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background);
-          padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow: hidden;
-          width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border);
+          position: fixed; top: 0; left: 0; height: 100vh;
+          background-color: var(--color-card-background);
+          padding: 1.5rem; display: flex; flex-direction: column;
+          z-index: 100; overflow: hidden;
+          width: var(--sidebar-collapsed-width);
+          transition: width 0.3s ease-in-out;
+          border-right: 1px solid var(--color-border);
         }
         .sidebar-left:hover { width: var(--sidebar-expanded-width); }
         .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
@@ -43,74 +64,140 @@
         .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
         .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
         .nav-link:hover { background-color: var(--color-border); }
+        .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); }
         .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
         .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
         .btn-logout:hover { background-color: var(--color-primary-hover); }
 
         /* 3. MAIN CONTENT WRAPPER */
         .main-content-wrapper {
-          margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out;
+          margin-left: var(--sidebar-collapsed-width);
+          padding: 2rem;
+          transition: margin-left 0.3s ease-in-out;
         }
-        .sidebar-left:hover ~ .main-content-wrapper { margin-left: var(--sidebar-expanded-width); }
-        .alumni-feed { max-width: 1200px; margin: 0 auto; }
-        .alumni-feed > h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .sidebar-left:hover ~ .main-content-wrapper {
+          margin-left: var(--sidebar-expanded-width);
+        }
+        .alumni-feed { max-width: 1400px; margin: 0 auto; }
+        .alumni-feed h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; }
 
-        /* 4. FILTER BAR (Unchanged) */
+        /* 4. FILTER BAR */
         .filter-bar {
-            display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; background-color: var(--color-card-background);
-            border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--color-border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--color-card-background);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--color-border);
         }
-        .filter-group { flex: 1 1 180px; display: flex; flex-direction: column; gap: 0.5rem; }
-        .filter-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); padding-left: 0.5rem; }
-        .filter-group input, .filter-group select {
-            width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border);
-            color: var(--text-primary); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem;
+        .filter-group {
+            flex: 1 1 180px; /* Grow, shrink, base width */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: var(--color-primary); }
-        
-        /* 5. NEW: ALUMNI LIST & PROFILE ROW STYLES */
-        .alumni-list { display: flex; flex-direction: column; gap: 1rem; }
-        .alumni-profile-row {
-            display: flex; align-items: center; gap: 1.5rem; background-color: var(--color-card-background);
-            padding: 1.5rem; border-radius: 12px; border: 1px solid var(--color-border);
-            transition: all 0.2s ease-in-out;
+        .filter-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding-left: 0.5rem;
         }
-        .alumni-profile-row:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            background-color: var(--color-background);
+            border: 1px solid var(--color-border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
             border-color: var(--color-primary);
         }
-        .profile-avatar {
-            width: 80px; height: 80px; border-radius: 50%;
-            object-fit: cover; flex-shrink: 0;
-        }
-        .profile-details { flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-        .profile-header { display: flex; align-items: center; justify-content: space-between; }
-        .profile-header-info { display: flex; align-items: baseline; gap: 0.75rem; }
-        .profile-name { font-size: 1.25rem; font-weight: 600; }
-        .profile-grad-year { font-size: 0.9rem; color: var(--text-secondary); }
-        .profile-job { font-weight: 500; font-size: 1rem; }
-        .availability-badge {
-            font-size: 0.75rem; font-weight: 600; color: var(--color-white); background-color: var(--color-green-tag);
-            padding: 0.25rem 0.75rem; border-radius: 99px; flex-shrink: 0;
-        }
-        .skills-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .skill-tag {
-            font-size: 0.75rem; background-color: var(--color-border); color: var(--text-secondary);
-            padding: 0.25rem 0.75rem; border-radius: 99px;
-        }
-        .profile-actions { display: flex; gap: 1rem; flex-shrink: 0; }
-        .profile-actions a, .profile-actions button {
-            padding: 0.75rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer;
-            border: none; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-        }
-        .btn-linkedin { background-color: var(--color-primary); color: var(--color-white); }
-        .btn-linkedin:hover { background-color: var(--color-primary-hover); }
-        .btn-linkedin svg { width: 16px; height: 16px; }
-        .btn-message { background-color: var(--color-border); color: var(--text-secondary); }
-        .btn-message:hover { background-color: var(--color-primary); color: var(--text-primary); }
-        #no-results { color: var(--text-secondary); text-align: center; padding: 3rem; }
 
+        /* 5. ALUMNI GRID & CARDS */
+        .alumni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .alumni-card {
+            background-color: var(--color-card-background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .alumni-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .alumni-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .alumni-info .details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        .alumni-info .job {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .card-actions {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+            width: 100%;
+            display: flex;
+            gap: 1rem;
+        }
+        .card-actions button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-profile {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+        }
+        .btn-profile:hover {
+            background-color: var(--color-primary-hover);
+        }
+        .btn-message {
+            background-color: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--text-secondary);
+        }
+        .btn-message:hover {
+            background-color: var(--color-border);
+            color: var(--text-primary);
+        }
+        #no-results {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 3rem;
+            grid-column: 1 / -1; /* Span full width of grid */
+        }
     </style>
 </head>
 <body>
@@ -126,13 +213,34 @@
         <div class="sidebar-content">
             <nav class="sidebar-nav">
               <ul>
-                <li><a href="home.html" class="nav-link"><svg></svg><span>Home</span></a></li>
-                <li><a href="explore.html" class="nav-link"><svg></svg><span>Explore</span></a></li>
-                <li><a href="network.html" class="nav-link"><svg></svg><span>Network</span></a></li>
-                <li><a href="message.html" class="nav-link"><svg></svg><span>Message</span></a></li>
-                <li><a href="alumni.html" class="nav-link active"><svg></svg><span>Alumni</span></a></li>
-                <li><a href="code-connect.html" class="nav-link"><svg></svg><span>Code & Connect</span></a></li>
-                <li><a href="profile.html" class="nav-link"><svg></svg><span>Profile</span></a></li>
+                <li><a href="home.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
+                    <span>Home</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="network.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
+                    <span>Network</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="alumni.html" class="nav-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+                <li><a href="profile.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
+                  <span>Profile</span>
+                </a></li>
               </ul>
             </nav>
             <a href="#" class="btn-logout">Logout</a>
@@ -144,109 +252,127 @@
             <h1>Alumni Directory</h1>
 
             <div class="filter-bar">
-                <div class="filter-group"><label for="name-search">Name</label><input type="text" id="name-search" placeholder="e.g., Priya Sharma"></div>
-                <div class="filter-group"><label for="year-select">Graduation Year</label><select id="year-select"><option value="">All Years</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option></select></div>
-                <div class="filter-group"><label for="major-select">Major</label><select id="major-select"><option value="">All Majors</option><option value="Computer Science">Computer Science</option><option value="Electronics & Comms">Electronics & Comms</option><option value="Mechanical">Mechanical</option><option value="Business Admin">Business Admin</option></select></div>
-                <div class="filter-group"><label for="company-search">Company</label><input type="text" id="company-search" placeholder="e.g., Google"></div>
-                <div class="filter-group"><label for="sort-select">Sort By</label><select id="sort-select"><option value="name-asc">Name (A-Z)</option><option value="year-desc">Year (Newest First)</option><option value="year-asc">Year (Oldest First)</option></select></div>
+                <div class="filter-group">
+                    <label for="name-search">Name</label>
+                    <input type="text" id="name-search" placeholder="e.g., Priya Sharma">
+                </div>
+                <div class="filter-group">
+                    <label for="year-select">Graduation Year</label>
+                    <select id="year-select">
+                        <option value="">All Years</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="major-select">Major</label>
+                    <select id="major-select">
+                        <option value="">All Majors</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics & Comms">Electronics & Comms</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Business Admin">Business Admin</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="company-search">Company</label>
+                    <input type="text" id="company-search" placeholder="e.g., Google">
+                </div>
+                 <div class="filter-group">
+                    <label for="location-search">Location</label>
+                    <input type="text" id="location-search" placeholder="e.g., Bengaluru">
+                </div>
             </div>
 
-            <div class="alumni-list" id="alumni-list">
-                 </div>
+            <div class="alumni-grid" id="alumni-grid">
+                </div>
         </main>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
+            // --- MOCK ALUMNI DATA ---
             const alumniData = [
-                { name: 'Priya Sharma', gradYear: 2021, major: 'Computer Science', company: 'Google', title: 'Software Engineer II', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/priyasharma', availability: 'Open to Mentoring', skills: ['Java', 'Cloud Computing', 'Kubernetes']},
-                { name: 'Rohan Gupta', gradYear: 2020, major: 'Electronics & Comms', company: 'Microsoft', title: 'Product Manager', location: 'Hyderabad', linkedinUrl: 'https://linkedin.com/in/rohan', availability: 'Hiring at my Company', skills: ['Product Strategy', 'Agile', 'UX']},
-                { name: 'Aisha Khan', gradYear: 2022, major: 'Business Admin', company: 'Deloitte', title: 'Business Analyst', location: 'Mumbai', linkedinUrl: 'https://linkedin.com/in/aishak', availability: '', skills: ['Data Analysis', 'SQL', 'Tableau']},
-                { name: 'Vikram Singh', gradYear: 2021, major: 'Mechanical', company: 'Tata Motors', title: 'Design Engineer', location: 'Pune', linkedinUrl: 'https://linkedin.com/in/vikramsingh', availability: '', skills: ['AutoCAD', 'CATIA', 'Prototyping']},
-                { name: 'Sneha Reddy', gradYear: 2023, major: 'Computer Science', company: 'Amazon', title: 'Data Engineer', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/snehareddy', availability: 'Open to Mentoring', skills: ['Python', 'AWS', 'Spark', 'Airflow']},
-                { name: 'Arjun Mehta', gradYear: 2020, major: 'Computer Science', company: 'Google', title: 'Senior AI Researcher', location: 'San Francisco', linkedinUrl: 'https://linkedin.com/in/arjunmehta', availability: 'Hiring at my Company', skills: ['Machine Learning', 'TensorFlow', 'NLP']},
-                { name: 'Neha Desai', gradYear: 2024, major: 'Electronics & Comms', company: 'Intel', title: 'VLSI Design Intern', location: 'Bengaluru', linkedinUrl: 'https://linkedin.com/in/nehadesai', availability: '', skills: ['Verilog', 'SystemVerilog', 'UVM']},
-                { name: 'Karan Malhotra', gradYear: 2022, major: 'Computer Science', company: 'Netflix', title: 'Full-Stack Developer', location: 'Remote', linkedinUrl: 'https://linkedin.com/in/karanm', availability: '', skills: ['React', 'Node.js', 'GraphQL', 'Microservices']},
+                { name: 'Priya Sharma', gradYear: 2021, major: 'Computer Science', company: 'Google', title: 'Software Engineer II', location: 'Bengaluru' },
+                { name: 'Rohan Gupta', gradYear: 2020, major: 'Electronics & Comms', company: 'Microsoft', title: 'Product Manager', location: 'Hyderabad' },
+                { name: 'Aisha Khan', gradYear: 2022, major: 'Business Admin', company: 'Deloitte', title: 'Business Analyst', location: 'Mumbai' },
+                { name: 'Vikram Singh', gradYear: 2021, major: 'Mechanical', company: 'Tata Motors', title: 'Design Engineer', location: 'Pune' },
+                { name: 'Sneha Reddy', gradYear: 2023, major: 'Computer Science', company: 'Amazon', title: 'Data Engineer', location: 'Bengaluru' },
+                { name: 'Arjun Mehta', gradYear: 2020, major: 'Computer Science', company: 'Google', title: 'Senior AI Researcher', location: 'San Francisco' },
+                { name: 'Neha Desai', gradYear: 2024, major: 'Electronics & Comms', company: 'Intel', title: 'VLSI Design Intern', location: 'Bengaluru' },
+                { name: 'Karan Malhotra', gradYear: 2022, major: 'Computer Science', company: 'Netflix', title: 'Full-Stack Developer', location: 'Remote' },
             ];
 
-            const alumniList = document.getElementById('alumni-list');
+            const alumniGrid = document.getElementById('alumni-grid');
             const nameInput = document.getElementById('name-search');
             const yearSelect = document.getElementById('year-select');
             const majorSelect = document.getElementById('major-select');
             const companyInput = document.getElementById('company-search');
-            const sortSelect = document.getElementById('sort-select');
+            const locationInput = document.getElementById('location-search');
 
+            // --- RENDER FUNCTION ---
             const renderAlumni = (data) => {
-                alumniList.innerHTML = '';
+                alumniGrid.innerHTML = ''; // Clear existing cards
+
                 if (data.length === 0) {
-                    alumniList.innerHTML = `<p id="no-results">No alumni found matching your criteria.</p>`;
+                    alumniGrid.innerHTML = `<p id="no-results">No alumni found matching your criteria.</p>`;
                     return;
                 }
-                data.forEach(alumnus => {
-                    const skillsHtml = alumnus.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('');
-                    const availabilityHtml = alumnus.availability ? `<span class="availability-badge">${alumnus.availability}</span>` : '';
 
-                    const row = document.createElement('div');
-                    row.className = 'alumni-profile-row';
-                    row.innerHTML = `
-                        <img src="https://picsum.photos/seed/${alumnus.name.replace(/\s/g, '')}/80" alt="${alumnus.name}" class="profile-avatar">
-                        <div class="profile-details">
-                            <div class="profile-header">
-                                <div class="profile-header-info">
-                                    <h3 class="profile-name">${alumnus.name}</h3>
-                                    <span class="profile-grad-year">Class of ${alumnus.gradYear}</span>
-                                </div>
-                                ${availabilityHtml}
-                            </div>
-                            <p class="profile-job">${alumnus.title} @ ${alumnus.company}</p>
-                            <div class="skills-container">${skillsHtml}</div>
+                data.forEach(alumnus => {
+                    const card = document.createElement('div');
+                    card.className = 'alumni-card';
+                    card.innerHTML = `
+                        <img src="https://picsum.photos/seed/${alumnus.name.replace(/\s/g, '')}/100" alt="${alumnus.name}" class="alumni-avatar">
+                        <div class="alumni-info">
+                            <h3>${alumnus.name}</h3>
+                            <p class="details">Class of ${alumnus.gradYear} &bull; ${alumnus.major}</p>
+                            <p class="job">${alumnus.title} @ ${alumnus.company}</p>
                         </div>
-                        <div class="profile-actions">
-                             <button class="btn-message">Message</button>
-                             <a href="${alumnus.linkedinUrl}" target="_blank" class="btn-linkedin">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-11 5H5v10h3V8zm-1.5-2.25a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM18 8h-2.5a3.5 3.5 0 0 0-3.5 3.5V18h3v-4.75A1.75 1.75 0 0 1 15.25 11h.25a1.75 1.75 0 0 1 1.75 1.75V18h3v-6.5A3.5 3.5 0 0 0 18 8z"></path></svg>
-                                LinkedIn
-                            </a>
+                        <div class="card-actions">
+                            <button class="btn-message">Message</button>
+                            <button class="btn-profile">View Profile</button>
                         </div>
                     `;
-                    alumniList.appendChild(row);
+                    alumniGrid.appendChild(card);
                 });
             };
 
+            // --- FILTERING LOGIC ---
             const filterAndRender = () => {
                 const nameQuery = nameInput.value.toLowerCase().trim();
                 const yearQuery = yearSelect.value;
                 const majorQuery = majorSelect.value;
                 const companyQuery = companyInput.value.toLowerCase().trim();
-                const sortQuery = sortSelect.value;
+                const locationQuery = locationInput.value.toLowerCase().trim();
 
-                let processedData = alumniData.filter(alumnus => {
-                    return (
-                        alumnus.name.toLowerCase().includes(nameQuery) &&
-                        (!yearQuery || alumnus.gradYear.toString() === yearQuery) &&
-                        (!majorQuery || alumnus.major === majorQuery) &&
-                        alumnus.company.toLowerCase().includes(companyQuery)
-                    );
+                const filteredData = alumniData.filter(alumnus => {
+                    const nameMatch = alumnus.name.toLowerCase().includes(nameQuery);
+                    const yearMatch = !yearQuery || alumnus.gradYear.toString() === yearQuery;
+                    const majorMatch = !majorQuery || alumnus.major === majorQuery;
+                    const companyMatch = alumnus.company.toLowerCase().includes(companyQuery);
+                    const locationMatch = alumnus.location.toLowerCase().includes(locationQuery);
+
+                    return nameMatch && yearMatch && majorMatch && companyMatch && locationMatch;
                 });
 
-                if (sortQuery === 'name-asc') {
-                    processedData.sort((a, b) => a.name.localeCompare(b.name));
-                } else if (sortQuery === 'year-desc') {
-                    processedData.sort((a, b) => b.gradYear - a.gradYear);
-                } else if (sortQuery === 'year-asc') {
-                    processedData.sort((a, b) => a.gradYear - b.gradYear);
-                }
-
-                renderAlumni(processedData);
+                renderAlumni(filteredData);
             };
 
             // --- EVENT LISTENERS ---
-            [nameInput, companyInput].forEach(el => el.addEventListener('input', filterAndRender));
-            [yearSelect, majorSelect, sortSelect].forEach(el => el.addEventListener('change', filterAndRender));
-            
-            // --- INITIAL PAGE LOAD ---
-            filterAndRender();
+            nameInput.addEventListener('input', filterAndRender);
+            companyInput.addEventListener('input', filterAndRender);
+            locationInput.addEventListener('input', filterAndRender);
+            yearSelect.addEventListener('change', filterAndRender);
+            majorSelect.addEventListener('change', filterAndRender);
+
+            // --- INITIAL RENDER ---
+            renderAlumni(alumniData);
+
         });
     </script>
 </body>
