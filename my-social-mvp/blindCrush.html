@@ -5,6 +5,7 @@
 <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
 <link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Plus+Jakarta+Sans:wght@400;500;700;800" onload="this.rel='stylesheet'" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <style type="text/tailwindcss">
         @keyframes pop-in {
@@ -76,7 +77,7 @@
 </div>
 <div class="flex items-center gap-4">
 <nav class="hidden md:flex items-center gap-6">
-<a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="cupid.html">Home</a>
 <a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">My Profile</a>
 <a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Settings</a>
 </nav>
@@ -96,7 +97,7 @@
 <div class="bg-white/60 dark:bg-zinc-900/50 p-8 rounded-xl shadow-lg space-y-6 backdrop-blur-md border border-white/30 dark:border-zinc-800/50">
 <h3 class="text-2xl font-bold text-center text-primary">Post Your Anonymous Crush</h3>
 <div class="space-y-4">
-<textarea class="form-textarea w-full px-4 py-3 rounded-md bg-white/80 dark:bg-background-dark/80 border-zinc-300 dark:border-zinc-700 focus:ring-primary focus:border-primary text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 backdrop-blur-sm resize-none" placeholder="Spill the tea... Is it their smile? The way they laugh? e.g., 'To the cute bio major in my stats class, your laugh is contagious! ❤️'" rows="3"></textarea>
+<textarea id="messageTextarea" class="form-textarea w-full px-4 py-3 rounded-md bg-white/80 dark:bg-background-dark/80 border-zinc-300 dark:border-zinc-700 focus:ring-primary focus:border-primary text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 backdrop-blur-sm resize-none" placeholder="Spill the tea... Is it their smile? The way they laugh? e.g., 'To the cute bio major in my stats class, your laugh is contagious! ❤️'" rows="3"></textarea>
 <div class="flex justify-between items-center">
 <div class="flex gap-2 text-zinc-500 dark:text-zinc-400">
 <button class="hover:text-primary transition-colors">😊</button>
@@ -104,77 +105,106 @@
 <button class="hover:text-primary transition-colors">🤫</button>
 <button class="hover:text-primary transition-colors">🔥</button>
 </div>
-<button class="flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
+<button id="postBtn" class="flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
 <span class="material-symbols-outlined">send</span>
 <span>Post Anonymously</span>
 </button>
 </div>
 </div>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-1 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">😍</p>
-<p class="text-zinc-700 dark:text-zinc-300">"To the guy who's always studying on the third floor of the library, your focus is so attractive. Hope you ace your finals!"</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">2 hours ago</p>
-</div>
-</div>
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-2 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">🤫</p>
-<p class="text-zinc-700 dark:text-zinc-300">"Saw you at the coffee shop today... you dropped your pen. I wanted to give it back but got too nervous. It's a nice pen."</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">5 hours ago</p>
-</div>
-</div>
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-3 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">🎶</p>
-<p class="text-zinc-700 dark:text-zinc-300">"Whoever was playing guitar on the quad yesterday, you're amazing. Please play again soon!"</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">1 day ago</p>
-</div>
-</div>
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-4 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">😂</p>
-<p class="text-zinc-700 dark:text-zinc-300">"To the person in my chem lab who always makes jokes under their breath, you're the highlight of my Tuesdays."</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">2 days ago</p>
-</div>
-</div>
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-5 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">☕️</p>
-<p class="text-zinc-700 dark:text-zinc-300">"Shoutout to the barista with the cool glasses who remembered my order. You made my day."</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">2 days ago</p>
-</div>
-</div>
-<div class="bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-6 relative overflow-hidden">
-<div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
-</div>
-<div class="relative">
-<p class="text-2xl mb-4">✨</p>
-<p class="text-zinc-700 dark:text-zinc-300">"Your smile literally brightens up the entire room. That's it, that's the post."</p>
-<p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">3 days ago</p>
-</div>
-</div>
+<div id = "cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    
+
 </div>
 </div>
 </main>
 </div>
+
+<script>
+  const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  const textarea = document.querySelector('#messageTextarea');
+  const postButton = document.querySelector('#postBtn');
+  const feedContainer = document.querySelector('#cards');
+
+  function timeAgo(dateString) {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diff = Math.floor((now - past) / 1000); 
+
+    if (diff < 60) return `${diff} sec ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+  }
+
+  function renderCard(card) {
+    const cardDiv = document.createElement("div");
+    cardDiv.className =
+      "bg-white/50 dark:bg-zinc-900/40 p-6 rounded-lg shadow-md backdrop-blur-sm border border-white/20 dark:border-zinc-800/40 animate-pop-in card-1 relative overflow-hidden";
+
+    cardDiv.innerHTML = `
+      <div class="absolute -top-4 -right-4 w-16 h-16 text-primary/10 dark:text-primary/20">
+        <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 
+                   8.5 2 5.42 4.42 3 7.5 3c1.74 0 
+                   3.41.81 4.5 2.09C13.09 3.81 
+                   14.76 3 16.5 3 19.58 3 22 
+                   5.42 22 8.5c0 3.78-3.4 
+                   6.86-8.55 11.54L12 21.35z"></path>
+        </svg>
+      </div>
+      <div class="relative">
+        <p class="text-2xl mb-4">${card.emoji || "😊"}</p>
+        <p class="text-zinc-700 dark:text-zinc-300">"${card.content}"</p>
+        <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-4">
+          ${timeAgo(card.created_at)}
+        </p>
+      </div>
+    `;
+
+    return cardDiv;
+  }
+
+  async function loadCards() {
+    const { data, error } = await supabase
+      .from("cards")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching cards:", error);
+      return;
+    }
+
+    feedContainer.innerHTML = "";
+    data.forEach(card => {
+      feedContainer.appendChild(renderCard(card));
+    });
+  }
+
+  postButton.addEventListener("click", async () => {
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const { data, error } = await supabase
+      .from("cards")
+      .insert([{ content: text, emoji: "😍" }])
+      .select();
+
+    if (error) {
+      console.error("Error inserting card:", error);
+      return;
+    }
+
+    feedContainer.prepend(renderCard(data[0]));
+    textarea.value = "";
+  });
+
+  loadCards();
+</script>
+
 
 </body></html>
