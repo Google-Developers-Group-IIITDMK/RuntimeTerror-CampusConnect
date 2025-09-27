@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code & Connect - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 1. GLOBAL STYLES & SETUP */
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --color-gold: #FFD700;
+          --color-silver: #C0C0C0;
+          --color-bronze: #CD7F32;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+
+        body {
+          font-family: 'Poppins', sans-serif;
+          color: var(--text-primary);
+          background-color: var(--color-background);
+          background-image: 
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+          overflow-y: auto;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* 2. COLLAPSIBLE SIDEBAR STYLES */
+        .sidebar-left {
+          position: fixed; top: 0; left: 0; height: 100vh;
+          background-color: var(--color-card-background);
+          padding: 1.5rem; display: flex; flex-direction: column;
+          z-index: 100; overflow: hidden;
+          width: var(--sidebar-collapsed-width);
+          transition: width 0.3s ease-in-out;
+          border-right: 1px solid var(--color-border);
+        }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+        .btn-logout:hover { background-color: var(--color-primary-hover); }
+
+        /* 3. MAIN LAYOUT FOR CODE & CONNECT */
+        .main-wrapper {
+          margin-left: var(--sidebar-collapsed-width);
+          display: grid;
+          grid-template-columns: 1fr 380px; /* Main content and leaderboard */
+          gap: 2rem;
+          padding: 2rem;
+          transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-left:hover ~ .main-wrapper {
+          margin-left: var(--sidebar-expanded-width);
+        }
+
+        /* 4. MAIN CONTENT AREA (LEFT & MIDDLE) */
+        .main-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .coders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .coder-card {
+            background-color: var(--color-card-background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .coder-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .coder-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-primary);
+        }
+
+        .coder-info h3 { font-size: 1.2rem; font-weight: 600; }
+        .coder-info p { color: var(--text-secondary); font-size: 0.9rem; }
+        
+        .coder-socials {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .social-link {
+            color: var(--text-secondary);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .social-link:hover {
+            color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+        .social-link svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .view-profile-btn {
+            margin-top: auto;
+            background: none;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .view-profile-btn:hover {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+        }
+
+
+        /* 5. LEADERBOARD (RIGHT SIDEBAR) */
+        .leaderboard-container {
+            position: sticky;
+            top: 2rem;
+            height: calc(100vh - 4rem);
+        }
+        .leaderboard-card {
+            background-color: var(--color-card-background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .leaderboard-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .leaderboard-list {
+            list-style: none;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        .leaderboard-item:not(:last-child){
+            margin-bottom: 0.5rem;
+        }
+        .leaderboard-item:hover {
+            background-color: var(--color-border);
+        }
+        
+        .rank {
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 40px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .rank.gold { color: var(--color-gold); }
+        .rank.silver { color: var(--color-silver); }
+        .rank.bronze { color: var(--color-bronze); }
+
+        .leaderboard-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 1rem;
+        }
+        .leaderboard-name {
+            font-weight: 500;
+            flex-grow: 1;
+        }
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <div class="profile-toggle">
+            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <div class="profile-info">
+              <h3 class="profile-name">Alex Chen</h3>
+              <p class="profile-title">Senior, Computer Science</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="home.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
+                    <span>Home</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="network.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
+                    <span>Network</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
+                  <span>Profile</span>
+                </a></li>
+              </ul>
+            </nav>
+            <a href="#" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <main class="main-content">
+            <h1>Top Coders & Developers</h1>
+            <div class="coders-grid" id="coders-grid">
+                </div>
+        </main>
+
+        <aside class="leaderboard-container">
+            <div class="leaderboard-card">
+                <h2>Institute Leaderboard</h2>
+                <ul class="leaderboard-list" id="leaderboard-list">
+                    </ul>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codersGrid = document.getElementById('coders-grid');
+            const leaderboardList = document.getElementById('leaderboard-list');
+
+            // --- MOCK DATA ---
+            const coders = [
+                { 
+                    name: 'Priya Sharma', 
+                    title: 'SDE II @ Google', 
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2450
+                },
+                { 
+                    name: 'Rohan Gupta', 
+                    title: 'AI Researcher @ OpenAI',
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2600
+                },
+                { 
+                    name: 'Aisha Khan', 
+                    title: 'Full-Stack Dev @ Netflix',
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2300
+                },
+                 { 
+                    name: 'Vikram Singh', 
+                    title: 'Cybersecurity Analyst',
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2150
+                },
+                 { 
+                    name: 'Sneha Reddy', 
+                    title: 'Data Engineer @ Amazon',
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2050
+                },
+                 { 
+                    name: 'Arjun Mehta', 
+                    title: 'Student | Competitive Programmer',
+                    github: 'https://github.com', 
+                    linkedin: 'https://linkedin.com', 
+                    twitter: 'https://twitter.com',
+                    leetcode: 'https://leetcode.com',
+                    codeforces: 'https://codeforces.com',
+                    score: 2800
+                }
+            ];
+            
+            // --- RENDER FUNCTIONS ---
+            
+            const renderCoderCards = () => {
+                codersGrid.innerHTML = '';
+                coders.forEach(coder => {
+                    const card = document.createElement('div');
+                    card.className = 'coder-card';
+                    card.innerHTML = `
+                        <div class="coder-profile">
+                            <img src="https://picsum.photos/seed/${coder.name.split(' ').join('')}/80" alt="${coder.name}" class="coder-avatar">
+                            <div class="coder-info">
+                                <h3>${coder.name}</h3>
+                                <p>${coder.title}</p>
+                            </div>
+                        </div>
+                        <div class="coder-socials">
+                             <a href="${coder.github}" target="_blank" class="social-link" title="GitHub">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                            </a>
+                            <a href="${coder.linkedin}" target="_blank" class="social-link" title="LinkedIn">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-11 5H5v10h3V8zm-1.5-2.25a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM18 8h-2.5a3.5 3.5 0 0 0-3.5 3.5V18h3v-4.75A1.75 1.75 0 0 1 15.25 11h.25a1.75 1.75 0 0 1 1.75 1.75V18h3v-6.5A3.5 3.5 0 0 0 18 8z"></path></svg>
+                            </a>
+                            <a href="${coder.twitter}" target="_blank" class="social-link" title="X (Twitter)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                            </a>
+                             <a href="${coder.leetcode}" target="_blank" class="social-link" title="LeetCode">
+                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M13.483 0a1.374 1.374 0 0 0-.961.437L7.116 5.852l5.4 5.4 5.4-5.4-5.405-5.421a1.374 1.374 0 0 0-.962-.431zm-3.6 5.405L4.478 10.81a1.374 1.374 0 0 0 0 1.943l5.405 5.405 5.4-5.4-5.4-5.404zm9.61 5.405-5.405 5.405 5.405 5.4a1.374 1.374 0 0 0 1.943 0l5.405-5.405a1.374 1.374 0 0 0 0-1.943z"></path></svg>
+                            </a>
+                             <a href="${coder.codeforces}" target="_blank" class="social-link" title="Codeforces">
+                                <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" fill="currentColor"><path d="M4.582 19.555h3.047v-3.834h-3.047zm4.722 0h3.047v-7.667h-3.047zm4.711 0h3.047V4.444h-3.047z"></path></svg>
+                            </a>
+                        </div>
+                        <button class="view-profile-btn">View Profile</button>
+                    `;
+                    codersGrid.appendChild(card);
+                });
+            }
+
+            const renderLeaderboard = () => {
+                leaderboardList.innerHTML = '';
+                // Sort coders by score in descending order
+                const sortedCoders = [...coders].sort((a, b) => b.score - a.score);
+
+                sortedCoders.forEach((coder, index) => {
+                    const rank = index + 1;
+                    let rankClass = '';
+                    if (rank === 1) rankClass = 'gold';
+                    if (rank === 2) rankClass = 'silver';
+                    if (rank === 3) rankClass = 'bronze';
+
+                    const item = document.createElement('li');
+                    item.className = 'leaderboard-item';
+                    item.innerHTML = `
+                        <span class="rank ${rankClass}">#${rank}</span>
+                        <img src="https://picsum.photos/seed/${coder.name.split(' ').join('')}/40" class="leaderboard-avatar" alt="${coder.name}">
+                        <span class="leaderboard-name">${coder.name}</span>
+                        <span class="leaderboard-score">${coder.score} pts</span>
+                    `;
+                    leaderboardList.appendChild(item);
+                });
+            }
+            
+            // --- INITIALIZATION ---
+            renderCoderCards();
+            renderLeaderboard();
+        });
+    </script>
+</body>
+</html>
