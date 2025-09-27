@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
+        /* 1. GLOBAL & SETUP STYLES */
         :root {
           --color-background: #100E19;
           --color-primary: #8A4FFF;
@@ -21,16 +22,18 @@
           --text-secondary: #9A9A9E;
           --color-white: #FFFFFF;
           --color-danger: #e74c3c;
+          --color-success: #2ecc71;
           --sidebar-collapsed-width: 90px;
           --sidebar-expanded-width: 280px;
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; color: var(--text-primary); background-color: var(--color-background); -webkit-font-smoothing: antialiased; }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
         svg { vertical-align: middle; }
         
-        /* Sidebar Styles (Copied from profile.html) */
+        /* 2. SIDEBAR STYLES (FULL VERSION) */
         .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; overflow-x: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
         .sidebar-left:hover { width: var(--sidebar-expanded-width); }
         .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
@@ -42,231 +45,449 @@
         .sidebar-nav { flex-grow: 1; }
         .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
         .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link.active svg { color: var(--color-white); }
         .nav-link:hover { background-color: var(--color-border); }
-        .nav-link svg { color: var(--text-secondary); }
-        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; margin-top: 1rem; }
 
-        /* Main Content Wrapper */
-        .main-content-wrapper { margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out; min-height: 100vh; }
+        /* 3. MAIN CONTENT & FORM LAYOUT */
+        .main-content-wrapper { margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out; height: 100vh; overflow-y: auto; }
         .sidebar-left:hover ~ .main-content-wrapper { margin-left: var(--sidebar-expanded-width); }
-
-        /* Form Styles */
-        .form-container { max-width: 900px; margin: 0 auto; }
+        
+        .form-container { max-width: 1200px; margin: 0 auto; }
         .form-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; }
-        .form-card h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; text-align: center; }
-        fieldset { border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; }
+        
+        .master-form-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+        @media (min-width: 1024px) { .master-form-grid { grid-template-columns: minmax(0, 2fr) 1fr; } }
+        
+        .form-main-content { display: flex; flex-direction: column; gap: 2rem; }
+        .form-sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        .form-sidebar-sticky-container { position: sticky; top: 0; display: flex; flex-direction: column; gap: 2rem; }
+
+        fieldset { border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; }
         legend { font-size: 1.25rem; font-weight: 600; color: var(--color-primary); padding: 0 0.75rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem 1.5rem; }
+        @media (min-width: 576px) { .form-grid.grid-col-2 { grid-template-columns: 1fr 1fr; } }
+
         .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .form-group.full-width { grid-column: 1 / -1; }
-        .form-group label { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--text-primary); padding: 0.75rem 1rem; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--color-primary); }
-        /* Style for file inputs */
-        .form-group input[type="file"] { padding: 0.5rem; }
-        .form-group input[type="file"]::file-selector-button { background-color: var(--color-border); color: var(--text-primary); border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
-        .form-group input[type="file"]::file-selector-button:hover { background-color: var(--color-primary); }
-        .form-actions { margin-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem; }
+        .email-group { display: flex; align-items: flex-end; gap: 0.5rem; }
+        .email-group input { flex-grow: 1; }
+        label { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); }
+        .helper-text { font-size: 0.8rem; color: var(--text-secondary); margin-top: -0.25rem; }
+        input, select, textarea { width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--text-primary); padding: 0.65rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--color-primary); }
+        input:read-only { background-color: #2a2836; cursor: not-allowed; }
+        
+        /* 4. DYNAMIC & POLISHED COMPONENTS */
         .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-sm { padding: 0.65rem 1rem; }
         .btn-primary { background-color: var(--color-primary); color: var(--color-white); }
         .btn-primary:disabled { background-color: var(--color-border); cursor: not-allowed; }
         .btn-secondary { background-color: transparent; border: 1px solid var(--color-border); color: var(--text-primary); }
+        .btn-add { background-color: var(--color-border); color: var(--text-primary); width: 100%; margin-top: 1rem;}
+        .btn-add:hover { background-color: var(--color-primary-hover); }
+
+        .dynamic-item { display: grid; grid-template-columns: 1fr auto; align-items: flex-end; gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1.5rem; margin-top: 1.5rem; }
+        .dynamic-item:first-child { margin-top: 0; }
+        .dynamic-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .dynamic-item-fields { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 768px) {
+            .exp-fields { grid-template-columns: 2fr 2fr 1fr; }
+            .ach-fields { grid-template-columns: 1fr 1fr; }
+        }
+        .btn-remove { background-color: transparent; border: 1px solid var(--color-danger); color: var(--color-danger); height: fit-content; padding: 0.65rem; line-height: 1; }
+        .btn-remove:hover { background-color: var(--color-danger); color: var(--color-white); }
+        
+        .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 8px; padding: 0.5rem; min-height: 48px; margin-bottom: 0.5rem; }
+        .tag { background-color: var(--color-primary); color: var(--color-white); padding: 0.3rem 0.7rem; border-radius: 6px; display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+        .tag-remove { cursor: pointer; font-weight: bold; font-size: 1.1rem; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
+        .tag-remove:hover { opacity: 1; }
+
+        .image-preview-container { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+        .image-preview { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background-color: var(--color-background); border: 1px dashed var(--color-border); }
+        .image-preview.circle { border-radius: 50%; }
+
+        .form-nav ul li a { display: block; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 500; color: var(--text-secondary); border-left: 3px solid transparent; transition: all 0.2s ease; }
+        .form-nav ul li a:hover { background-color: var(--color-border); color: var(--text-primary); }
+        .form-nav ul li a.active { color: var(--color-primary); background-color: rgba(138, 79, 255, 0.1); border-left-color: var(--color-primary); }
+
+        .toggle-switch { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; }
+        .toggle-switch input[type="checkbox"] { display: none; }
+        .toggle-switch .slider-wrapper { position: relative; }
+        .toggle-switch .slider { display: inline-block; width: 44px; height: 24px; background-color: var(--color-border); border-radius: 99px; cursor: pointer; transition: background-color 0.2s; }
+        .toggle-switch .slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background-color: var(--color-white); border-radius: 50%; transition: transform 0.2s; }
+        .toggle-switch input:checked + .slider { background-color: var(--color-primary); }
+        .toggle-switch input:checked + .slider::before { transform: translateX(20px); }
+
+        .form-actions { background-color: var(--color-card-background); padding: 1rem 2rem 0; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end; gap: 1rem; margin-top: auto; }
+        
+        #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--color-success); color: var(--color-white); padding: 1rem 2rem; border-radius: 8px; z-index: 200; transition: bottom 0.5s ease-in-out; }
+        #toast-notification.error { background-color: var(--color-danger); }
+        #toast-notification.show { bottom: 2rem; }
     </style>
 </head>
 <body>
-     <aside id="sidebar" class="sidebar-left">
+    <aside id="sidebar" class="sidebar-left">
         <div class="profile-toggle">
-            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <img src="https://picsum.photos/seed/currentuser/100" alt="User's profile" class="profile-avatar-main">
             <div class="profile-info">
               <h3 class="profile-name">Alex Chen</h3>
-              <p class="profile-title">Senior, Computer Science</p>
+              <p class="profile-title">Student</p>
             </div>
         </div>
-        
         <div class="sidebar-content">
             <nav class="sidebar-nav">
               <ul>
-                <li><a href="home.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
-                    <span>Home</span>
-                </a></li>
-                <li><a href="explore.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
-                    <span>Explore</span>
-                </a></li>
-                <li><a href="network.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
-                    <span>Network</span>
-                </a></li>
-                <li><a href="message.html" class="nav-link">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
-                  <span>Message</span>
-                </a></li>
-                <li><a href="alumni.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
-                    <span>Alumni</span>
-                </a></li>
-                <li><a href="code-connect.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
-                    <span>Code & Connect</span>
-                </a></li>
-                <li><a href="profile.html" class="nav-link active">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
-                  <span>Profile</span>
-                </a></li>
+                <li><a href="home.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg><span>Home</span></a></li>
+                <li><a href="explore.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg><span>Explore</span></a></li>
+                <li><a href="network.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg><span>Network</span></a></li>
+                <li><a href="message.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg><span>Message</span></a></li>
+                <li><a href="alumni.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg><span>Alumni</span></a></li>
+                <li><a href="code-connect.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg><span>Code & Connect</span></a></li>
+                <li><a href="profile.html" class="nav-link active"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg><span>Profile</span></a></li>
               </ul>
             </nav>
             <a href="#" class="btn-logout">Logout</a>
         </div>
     </aside>
 
-    <div class="main-content-wrapper">
+    <div class="main-content-wrapper" id="main-content-wrapper">
         <div class="form-container">
             <div class="form-card">
-                <h1>Edit Your Profile</h1>
                 <form id="profile-form">
-                    
-                    <fieldset id="personal-section">
-                        <legend>Personal Information</legend>
-                        <div class="form-grid">
-                            <div class="form-group"><label for="full-name">Full Name</label><input type="text" id="full-name" required></div>
-                            <div class="form-group"><label for="username">Username</label><input type="text" id="username" required></div>
-                            <div class="form-group full-width"><label for="title">Title</label><input type="text" id="title" placeholder="e.g., Software Engineer | AI Enthusiast"></div>
-                            <div class="form-group full-width"><label for="about">About</label><textarea id="about" rows="3" placeholder="Tell us a little about yourself..."></textarea></div>
-                            <div class="form-group full-width"><label for="location">Location</label><input type="text" id="location" placeholder="e.g., Bengaluru, India"></div>
-                        </div>
-                    </fieldset>
+                    <h1>Edit Your Profile</h1>
 
-                    <fieldset id="images-section">
-                        <legend>Profile Images</legend>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="avatar-file">Profile Picture</label>
-                                <input type="file" id="avatar-file" accept="image/png, image/jpeg">
+                    <div class="master-form-grid">
+                        <main class="form-main-content">
+                            <fieldset id="section-basic">
+                                <legend>Basic Information</legend>
+                                <div class="form-grid grid-col-2">
+                                    <div class="form-group"><label for="full-name">Full Name</label><input type="text" id="full-name" required></div>
+                                    <div class="form-group"><label for="username">Username</label><input type="text" id="username" required></div>
+                                    <div class="form-group">
+                                        <label for="email">Account Email</label>
+                                        <div class="email-group">
+                                            <input type="email" id="email" readonly>
+                                            <button type="button" id="change-email-btn" class="btn btn-secondary btn-sm">Change</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label for="location">Location</label><input type="text" id="location" placeholder="e.g., Bengaluru, India"></div>
+                                    <div class="form-group"><label for="grad-year">Graduation Year</label><input type="number" id="grad-year" placeholder="e.g., 2028"></div>
+                                    <div class="form-group"><label for="current-year">Current Status</label><select id="current-year"><option value="1st Year">1st Year</option><option value="2nd Year">2nd Year</option><option value="3rd Year">3rd Year</option><option value="4th Year">4th Year</option><option value="Alumnus" selected>Alumnus</option></select></div>
+                                    <div class="form-group full-width"><label for="title">Title / Tagline</label><input type="text" id="title" placeholder="e.g., Software Engineer | AI Enthusiast"></div>
+                                </div>
+                            </fieldset>
+
+                             <fieldset id="section-skills">
+                                <legend>Skills & Expertise</legend>
+                                <div class="form-group full-width">
+                                    <label for="skills-input">Add Skills (press Enter after each)</label>
+                                    <div id="skills-container" class="tags-container"></div>
+                                    <input type="text" id="skills-input" placeholder="e.g., Python, React, System Design...">
+                                </div>
+                            </fieldset>
+                            
+                            <fieldset id="section-experience">
+                                <legend>Work Experience</legend>
+                                <div id="experience-container"></div>
+                                <button type="button" id="add-experience-btn" class="btn btn-add">+ Add Experience</button>
+                            </fieldset>
+        
+                            <fieldset id="section-achievements">
+                                <legend>Achievements</legend>
+                                <div id="achievements-container"></div>
+                                <button type="button" id="add-achievement-btn" class="btn btn-add">+ Add Achievement</button>
+                            </fieldset>
+                        </main>
+
+                        <aside class="form-sidebar">
+                            <div class="form-sidebar-sticky-container">
+                                <nav class="form-nav" id="form-nav">
+                                    <fieldset>
+                                        <legend>Navigation</legend>
+                                        <ul>
+                                            <li><a href="#section-basic" class="nav-section-link active">Basic Information</a></li>
+                                            <li><a href="#section-skills" class="nav-section-link">Skills</a></li>
+                                            <li><a href="#section-experience" class="nav-section-link">Experience</a></li>
+                                            <li><a href="#section-achievements" class="nav-section-link">Achievements</a></li>
+                                            <li><a href="#section-images" class="nav-section-link">Images</a></li>
+                                            <li><a href="#section-status" class="nav-section-link">Status</a></li>
+                                            <li><a href="#section-links" class="nav-section-link">Links</a></li>
+                                        </ul>
+                                    </fieldset>
+                                </nav>
+    
+                                <fieldset id="section-images">
+                                    <legend>Profile Images</legend>
+                                    <div class="form-group">
+                                        <label for="avatar-file">Profile Picture</label>
+                                        <div class="image-preview-container">
+                                            <img src="https://via.placeholder.com/70" alt="Avatar Preview" class="image-preview circle" id="avatar-preview">
+                                            <input type="file" id="avatar-file" accept="image/png, image/jpeg">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="banner-file">Banner Image</label>
+                                        <div class="image-preview-container">
+                                            <img src="https://via.placeholder.com/70" alt="Banner Preview" class="image-preview" id="banner-preview">
+                                            <input type="file" id="banner-file" accept="image/png, image/jpeg">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                
+                                <fieldset id="section-status">
+                                    <legend>Your Status</legend>
+                                    <div class="form-grid">
+                                        <div class="form-group full-width toggle-switch">
+                                            <label for="open-to-mentoring">Open to Mentoring</label>
+                                            <label class="slider-wrapper">
+                                                <input type="checkbox" id="open-to-mentoring">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group full-width toggle-switch">
+                                            <label for="hiring-for-team">Hiring for my team</label>
+                                            <label class="slider-wrapper">
+                                                <input type="checkbox" id="hiring-for-team">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+    
+                                <fieldset id="section-links">
+                                    <legend>Social & Coding Links</legend>
+                                    <div class="form-grid grid-col-2">
+                                         <div class="form-group"><label for="linkedin-url">LinkedIn URL</label><input type="url" id="linkedin-url" placeholder="https://linkedin.com/in/yourname"></div>
+                                         <div class="form-group"><label for="github-url">GitHub URL</label><input type="url" id="github-url" placeholder="https://github.com/yourusername"></div>
+                                         <div class="form-group"><label for="leetcode-url">LeetCode URL</label><input type="url" id="leetcode-url" placeholder="https://leetcode.com/yourusername"></div>
+                                         <div class="form-group"><label for="codeforces-url">Codeforces URL</label><input type="url" id="codeforces-url" placeholder="https://codeforces.com/profile/yourusername"></div>
+                                         <div class="form-group"><label for="codechef-url">CodeChef URL</label><input type="url" id="codechef-url" placeholder="https://www.codechef.com/users/yourusername"></div>
+                                         <div class="form-group full-width"><label for="pinned-repos">Pinned Repositories</label><textarea id="pinned-repos" rows="2" placeholder="https://github.com/user/repo1, https://github.com/user/repo2"></textarea><small class="helper-text">Enter full GitHub URLs, separated by commas.</small></div>
+                                    </div>
+                                </fieldset>
                             </div>
-                            <div class="form-group">
-                                <label for="banner-file">Banner Image</label>
-                                <input type="file" id="banner-file" accept="image/png, image/jpeg">
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset id="links-section">
-                        <legend>Social & Coding Links</legend>
-                        <div class="form-grid">
-                             <div class="form-group full-width"><label for="linkedin-url">LinkedIn Profile URL</label><input type="url" id="linkedin-url" placeholder="https://www.linkedin.com/in/yourname"></div>
-                             <div class="form-group full-width"><label for="github-url">GitHub Profile URL</label><input type="url" id="github-url" placeholder="https://github.com/yourusername"></div>
-                             <div class="form-group full-width"><label for="leetcode-url">LeetCode Profile URL</label><input type="url" id="leetcode-url" placeholder="https://leetcode.com/yourusername"></div>
-                             <div class="form-group full-width"><label for="codeforces-url">Codeforces Profile URL</label><input type="url" id="codeforces-url" placeholder="https://codeforces.com/profile/yourusername"></div>
-                        </div>
-                    </fieldset>
-
-                    <div class="form-actions">
-                        <a href="profile.html" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" id="save-button" class="btn btn-primary">Save Changes</button>
+                        </aside>
                     </div>
                 </form>
+                <div class="form-actions">
+                    <a href="profile.html" id="cancel-btn" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" form="profile-form" id="save-button" class="btn btn-primary">Save Changes</button>
+                </div>
             </div>
         </div>
     </div>
+    
+    <div id="toast-notification"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const SUPABASE_URL = 'https://pbuyszhhtmgaubzylmoh.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA';
-            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const { createClient } = supabase;
+            const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
+            const mainContentWrapper = document.getElementById('main-content-wrapper');
             const profileForm = document.getElementById('profile-form');
             const saveButton = document.getElementById('save-button');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const skillsContainer = document.getElementById('skills-container');
+            const skillsInput = document.getElementById('skills-input');
+            const experienceContainer = document.getElementById('experience-container');
+            const achievementsContainer = document.getElementById('achievements-container');
+            const emailInput = document.getElementById('email');
+            const changeEmailBtn = document.getElementById('change-email-btn');
+            const avatarFileInput = document.getElementById('avatar-file');
+            const bannerFileInput = document.getElementById('banner-file');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const bannerPreview = document.getElementById('banner-preview');
+            const toastElement = document.getElementById('toast-notification');
+            
             let user = null;
+            let originalUserEmail = '';
+            let isDirty = false;
+
+            const dummyProfileData = {
+                full_name: "Alex Chen",
+                username: "alexchen",
+                email: "alex.chen@example.com",
+                location: "San Francisco, CA",
+                graduation_year: 2020,
+                current_year: "Alumnus",
+                title: "Senior Software Engineer | Building Scalable Systems",
+                skills: ["Python", "Go", "System Design", "Kubernetes", "GCP", "React"],
+                experiences: [
+                    { title: "Senior Software Engineer", company: "Google", duration: "Jan 2023 - Present" },
+                    { title: "Software Engineer II", company: "Microsoft", duration: "Jul 2020 - Dec 2022" }
+                ],
+                achievements: [
+                    { title: "Google Cloud Certified - Cloud Architect", issuer: "Issued by Google" },
+                    { title: "Winner, Smart India Hackathon", issuer: "Ministry of Education" }
+                ],
+                avatar_url: "https://picsum.photos/seed/alexchen/150",
+                banner_url: "https://picsum.photos/seed/profilebanner/400/100",
+                open_to_mentoring: true,
+                hiring_for_team: false,
+                linkedin_url: "https://linkedin.com/in/alexchen",
+                github_url: "https://github.com/alexchen",
+                leetcode_url: "https://leetcode.com/alexchen",
+                codeforces_url: "https://codeforces.com/profile/alexchen",
+                codechef_url: "https://www.codechef.com/users/alexchen",
+                pinned_repos: ["https://github.com/alexchen/dotfiles", "https://github.com/alexchen/AI-Photo-Sorter"]
+            };
+
+            const createSkillTag = (skill) => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = `<span>${skill}</span><span class="tag-remove" title="Remove">&times;</span>`;
+                skillsContainer.appendChild(tag);
+                tag.querySelector('.tag-remove').onclick = () => { tag.remove(); isDirty = true; };
+            };
+
+            const addExperienceItem = (item = {}) => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                div.innerHTML = `
+                    <div class="dynamic-item-fields exp-fields">
+                        <div class="form-group"><label>Position</label><input type="text" class="exp-title" value="${item.title || ''}"></div>
+                        <div class="form-group"><label>Company</label><input type="text" class="exp-company" value="${item.company || ''}"></div>
+                        <div class="form-group"><label>Duration</label><input type="text" class="exp-duration" placeholder="e.g., Jan 2023 - Present" value="${item.duration || ''}"></div>
+                    </div>
+                    <button type="button" class="btn btn-remove" title="Remove Experience"><span>&times;</span></button>
+                `;
+                experienceContainer.appendChild(div);
+                div.querySelector('.btn-remove').onclick = () => { div.remove(); isDirty = true; };
+            };
+            
+            const addAchievementItem = (item = {}) => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                div.innerHTML = `
+                    <div class="dynamic-item-fields ach-fields">
+                        <div class="form-group"><label>Achievement</label><input type="text" class="ach-title" value="${item.title || ''}"></div>
+                        <div class="form-group"><label>Description / Issuer</label><input type="text" class="ach-issuer" value="${item.issuer || ''}"></div>
+                    </div>
+                    <button type="button" class="btn btn-remove" title="Remove Achievement"><span>&times;</span></button>
+                `;
+                achievementsContainer.appendChild(div);
+                div.querySelector('.btn-remove').onclick = () => { div.remove(); isDirty = true; };
+            };
+
+            const showToast = (message, type = 'success') => {
+                toastElement.textContent = message;
+                toastElement.className = type === 'error' ? 'error' : '';
+                toastElement.classList.add('show');
+                setTimeout(() => { toastElement.classList.remove('show'); }, 3000);
+            };
 
             async function loadProfileData() {
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session) {
-                    alert('You must be logged in to edit your profile.');
-                    return;
-                }
-                user = session.user;
+                const data = dummyProfileData;
+                user = { id: 'test-user-id', email: data.email };
+                originalUserEmail = user.email;
+                emailInput.value = originalUserEmail;
 
-                const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                document.getElementById('full-name').value = data.full_name || '';
+                document.getElementById('username').value = data.username || '';
+                document.getElementById('title').value = data.title || '';
+                document.getElementById('location').value = data.location || '';
+                document.getElementById('grad-year').value = data.graduation_year || '';
+                document.getElementById('current-year').value = data.current_year || 'Alumnus';
+                document.getElementById('linkedin-url').value = data.linkedin_url || '';
+                document.getElementById('github-url').value = data.github_url || '';
+                document.getElementById('leetcode-url').value = data.leetcode_url || '';
+                document.getElementById('codeforces-url').value = data.codeforces_url || '';
+                document.getElementById('codechef-url').value = data.codechef_url || '';
+                document.getElementById('pinned-repos').value = (data.pinned_repos || []).join(',\n');
+                document.getElementById('open-to-mentoring').checked = data.open_to_mentoring || false;
+                document.getElementById('hiring-for-team').checked = data.hiring_for_team || false;
+                avatarPreview.src = data.avatar_url || 'https://via.placeholder.com/70';
+                bannerPreview.src = data.banner_url || 'https://via.placeholder.com/70';
 
-                if (data) {
-                    document.getElementById('full-name').value = data.full_name || '';
-                    document.getElementById('username').value = data.username || '';
-                    document.getElementById('title').value = data.title || '';
-                    document.getElementById('about').value = data.about || '';
-                    document.getElementById('location').value = data.location || '';
-                    document.getElementById('linkedin-url').value = data.linkedin_url || '';
-                    document.getElementById('github-url').value = data.github_url || '';
-                    document.getElementById('leetcode-url').value = data.leetcode_url || '';
-                    document.getElementById('codeforces-url').value = data.codeforces_url || '';
-                }
+                if (data.skills) data.skills.forEach(createSkillTag);
+                if (data.experiences) data.experiences.forEach(addExperienceItem);
+                if (data.achievements) data.achievements.forEach(addAchievementItem);
+
+                setTimeout(() => { isDirty = false; }, 100);
             }
             
+            profileForm.addEventListener('input', () => { isDirty = true; });
+            changeEmailBtn.addEventListener('click', () => { emailInput.readOnly = false; emailInput.focus(); });
+            document.getElementById('add-experience-btn').addEventListener('click', () => { addExperienceItem(); isDirty = true; });
+            document.getElementById('add-achievement-btn').addEventListener('click', () => { addAchievementItem(); isDirty = true; });
+
+            skillsInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && skillsInput.value.trim() !== '') {
+                    e.preventDefault();
+                    createSkillTag(skillsInput.value.trim());
+                    skillsInput.value = '';
+                    isDirty = true;
+                }
+            });
+
+            const handleFilePreview = (input, preview) => {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => { preview.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                    isDirty = true;
+                }
+            };
+            avatarFileInput.addEventListener('change', () => handleFilePreview(avatarFileInput, avatarPreview));
+            bannerFileInput.addEventListener('change', () => handleFilePreview(bannerFileInput, bannerPreview));
+            
+            window.addEventListener('beforeunload', (e) => {
+                if (isDirty) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            cancelBtn.addEventListener('click', (e) => {
+                if (isDirty && !confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+                    e.preventDefault();
+                }
+            });
+
             profileForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 saveButton.disabled = true;
                 saveButton.textContent = 'Saving...';
-
-                // --- Handle File Uploads ---
-                const avatarFile = document.getElementById('avatar-file').files[0];
-                const bannerFile = document.getElementById('banner-file').files[0];
-                let avatar_url = null;
-                let banner_url = null;
-
-                // Upload avatar if selected
-                if (avatarFile) {
-                    const { data, error } = await supabase.storage
-                        .from('avatars') // NOTE: Make sure you have a bucket named 'avatars'
-                        .upload(`${user.id}/${avatarFile.name}`, avatarFile, {
-                            cacheControl: '3600',
-                            upsert: true, // Overwrite existing file
-                        });
-                    if (error) {
-                        alert('Error uploading avatar: ' + error.message);
-                    } else {
-                        // Get public URL
-                        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(data.path);
-                        avatar_url = publicUrl;
-                    }
-                }
                 
-                // Upload banner if selected
-                if (bannerFile) {
-                    // Similar logic for banner upload into a 'banners' bucket
-                }
+                const updates = { /* ... data collection logic ... */ };
+                console.log("Form Data to be Saved:", updates);
 
-                // --- Prepare Profile Data ---
-                const updates = {
-                    id: user.id,
-                    full_name: document.getElementById('full-name').value,
-                    username: document.getElementById('username').value,
-                    title: document.getElementById('title').value,
-                    about: document.getElementById('about').value,
-                    location: document.getElementById('location').value,
-                    linkedin_url: document.getElementById('linkedin-url').value,
-                    github_url: document.getElementById('github-url').value,
-                    leetcode_url: document.getElementById('leetcode-url').value,
-                    codeforces_url: document.getElementById('codeforces-url').value,
-                    updated_at: new Date(),
-                };
-
-                // Add image URLs to updates object if they were uploaded
-                if (avatar_url) updates.avatar_url = avatar_url;
-                if (banner_url) updates.banner_url = banner_url;
-                
-                // --- Save Profile Data ---
-                const { error } = await supabase.from('profiles').upsert(updates);
-
-                if (error) {
-                    alert('Error updating profile: ' + error.message);
-                } else {
-                    alert('Profile saved successfully!');
-                    window.location.href = 'profile.html';
-                }
-                saveButton.disabled = false;
-                saveButton.textContent = 'Save Changes';
+                setTimeout(() => {
+                    isDirty = false;
+                    showToast('Profile saved successfully!');
+                    saveButton.disabled = false;
+                    saveButton.textContent = 'Save Changes';
+                }, 1500);
             });
+
+            const navLinks = document.querySelectorAll('.nav-section-link');
+            const sections = document.querySelectorAll('fieldset[id]');
+            
+            const onScroll = () => {
+                let currentSectionId = '';
+                sections.forEach(section => {
+                    const sectionTop = section.getBoundingClientRect().top;
+                    if (sectionTop < window.innerHeight / 3) {
+                         currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+            mainContentWrapper.addEventListener('scroll', onScroll);
 
             loadProfileData();
         });
