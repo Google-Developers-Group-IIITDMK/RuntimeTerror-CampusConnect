@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 1. GLOBAL STYLES & SETUP */
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --color-online: #2ecc71;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+
+        body {
+          font-family: 'Poppins', sans-serif;
+          color: var(--text-primary);
+          background-color: var(--color-background);
+          background-image: 
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+          overflow: hidden; /* Prevents the main page from scrolling */
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* 2. COLLAPSIBLE SIDEBAR STYLES */
+        .sidebar-left {
+          position: fixed; 
+          top: 0; 
+          left: 0; 
+          height: 100vh;
+          background-color: var(--color-card-background);
+          padding: 1.5rem; 
+          display: flex; 
+          flex-direction: column;
+          z-index: 100; 
+          overflow: hidden;
+          width: var(--sidebar-collapsed-width);
+          transition: width 0.3s ease-in-out;
+          border-right: 1px solid var(--color-border);
+        }
+        .sidebar-left:hover { 
+          width: var(--sidebar-expanded-width); 
+        }
+        .profile-toggle { 
+          display: flex; 
+          align-items: center; 
+          gap: 1rem; 
+          height: 60px; 
+          flex-shrink: 0; 
+        }
+        .profile-info { 
+          opacity: 0; 
+          transition: opacity 0.2s ease-in-out; 
+          white-space: nowrap; 
+        }
+        .sidebar-left:hover .profile-info { 
+          opacity: 1; 
+        }
+        .profile-avatar-main { 
+          width: 60px; 
+          height: 60px; 
+          border-radius: 12px; 
+          object-fit: cover; 
+          flex-shrink: 0; 
+        }
+        .sidebar-content { 
+          margin-top: 2rem; 
+          flex-grow: 1; 
+          display: flex; 
+          flex-direction: column; 
+          opacity: 0; 
+          transition: opacity 0.3s ease-in-out; 
+          white-space: nowrap; 
+        }
+        .sidebar-left:hover .sidebar-content { 
+          opacity: 1; 
+        }
+        .sidebar-nav { 
+          flex-grow: 1; 
+        }
+        .nav-link { 
+          display: flex; 
+          align-items: center; 
+          gap: 1rem; 
+          padding: 1rem; 
+          border-radius: 12px; 
+          font-weight: 500; 
+        }
+        .nav-link.active { 
+          background-color: var(--color-primary); 
+          color: var(--color-white); 
+        }
+        .nav-link:hover { 
+          background-color: var(--color-border); 
+        }
+        .nav-link.active svg, .nav-link:hover svg { 
+          color: var(--color-white); 
+        }
+        .nav-link svg { 
+          color: var(--text-secondary); 
+          transition: color 0.2s; 
+          flex-shrink: 0;
+        }
+        .btn-logout { 
+          background-color: var(--color-primary); 
+          color: var(--color-white); 
+          padding: 1rem; 
+          border-radius: 12px; 
+          font-weight: 600; 
+          text-align: center; 
+        }
+        .btn-logout:hover { 
+          background-color: var(--color-primary-hover); 
+        }
+
+        /* 3. MESSAGING INTERFACE LAYOUT */
+        .messaging-wrapper {
+          margin-left: var(--sidebar-collapsed-width);
+          display: grid;
+          grid-template-columns: 360px 1fr 320px;
+          height: 100vh;
+          transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-left:hover ~ .messaging-wrapper {
+          margin-left: var(--sidebar-expanded-width);
+        }
+
+        /* 4. CONVERSATIONS PANEL (LEFT) */
+        .conversations-panel {
+          display: flex; 
+          flex-direction: column; 
+          height: 100vh;
+          border-right: 1px solid var(--color-border);
+        }
+        .panel-header { 
+          padding: 1.5rem; 
+          flex-shrink: 0; 
+        }
+        .panel-header h1 { 
+          font-size: 1.5rem; 
+          margin-bottom: 1rem; 
+        }
+        .search-bar { 
+          width: 100%; 
+          background-color: var(--color-background); 
+          border: 1px solid var(--color-border); 
+          color: var(--text-primary); 
+          padding: 0.75rem 1rem; 
+          border-radius: 8px; 
+          font-size: 0.9rem; 
+        }
+        .search-bar:focus { 
+          outline: none; 
+          border-color: var(--color-primary); 
+        }
+        .conversations-list { 
+          overflow-y: auto; 
+          flex-grow: 1; 
+        }
+        .conversation-item { 
+          display: flex; 
+          gap: 1rem; 
+          padding: 1rem 1.5rem; 
+          cursor: pointer; 
+          border-bottom: 1px solid var(--color-border); 
+          transition: background-color 0.2s; 
+        }
+        .conversation-item:hover { 
+          background-color: var(--color-border); 
+        }
+        .conversation-item.active { 
+          background-color: var(--color-primary); 
+        }
+        .convo-avatar-wrapper { 
+          position: relative; 
+          flex-shrink: 0; 
+        }
+        .convo-avatar { 
+          width: 50px; 
+          height: 50px; 
+          border-radius: 50%; 
+          object-fit: cover; 
+        }
+        .status-dot { 
+          width: 12px; 
+          height: 12px; 
+          background-color: var(--color-online); 
+          border-radius: 50%; 
+          border: 2px solid var(--color-card-background); 
+          position: absolute; 
+          bottom: 0; 
+          right: 0; 
+        }
+        .convo-details { 
+          flex-grow: 1; 
+          overflow: hidden; 
+        }
+        .convo-header { 
+          display: flex; 
+          justify-content: space-between; 
+          align-items: baseline; 
+        }
+        .convo-header h4 { 
+          font-weight: 600; 
+          font-size: 1rem; 
+          white-space: nowrap; 
+        }
+        .convo-header span { 
+          font-size: 0.75rem; 
+          color: var(--text-secondary); 
+          flex-shrink: 0; 
+        }
+        .convo-details p { 
+          font-size: 0.85rem; 
+          color: var(--text-secondary); 
+          white-space: nowrap; 
+          overflow: hidden; 
+          text-overflow: ellipsis; 
+        }
+
+        /* 5. CHAT PANEL (MIDDLE) */
+        .chat-panel { 
+          display: flex; 
+          flex-direction: column; 
+          height: 100vh; 
+          background-color: var(--color-background); 
+        }
+        .chat-placeholder { 
+          flex-grow: 1; 
+          display: flex; 
+          flex-direction: column; 
+          justify-content: center; 
+          align-items: center; 
+          text-align: center; 
+          padding: 2rem; 
+          gap: 1rem; 
+        }
+        .chat-placeholder h2 { 
+          font-size: 1.5rem; 
+        }
+        .chat-placeholder p { 
+          color: var(--text-secondary); 
+          max-width: 300px; 
+        }
+        .chat-header { 
+          display: flex; 
+          align-items: center; 
+          gap: 1rem; 
+          padding: 1rem 1.5rem; 
+          border-bottom: 1px solid var(--color-border); 
+          flex-shrink: 0; 
+        }
+        .chat-header img { 
+          width: 40px; 
+          height: 40px; 
+          border-radius: 50%; 
+        }
+        .chat-header h3 { 
+          font-size: 1.2rem; 
+        }
+        .chat-messages { 
+          flex-grow: 1; 
+          overflow-y: auto; 
+          padding: 1.5rem; 
+          display: flex; 
+          flex-direction: column; 
+          gap: 0.25rem; 
+        }
+        .message-bubble { 
+          padding: 0.75rem 1rem; 
+          border-radius: 18px; 
+          max-width: 70%; 
+          line-height: 1.4; 
+          margin-bottom: 0.5rem; 
+        }
+        .message-bubble.grouped { 
+          margin-top: -0.25rem; 
+        }
+        .message-bubble.sent { 
+          background-color: var(--color-primary); 
+          color: var(--color-white); 
+          align-self: flex-end; 
+          border-bottom-right-radius: 4px; 
+        }
+        .message-bubble.sent.grouped { 
+          border-top-right-radius: 4px; 
+        }
+        .message-bubble.received { 
+          background-color: var(--color-card-background); 
+          border: 1px solid var(--color-border); 
+          align-self: flex-start; 
+          border-bottom-left-radius: 4px; 
+        }
+        .message-bubble.received.grouped { 
+          border-top-left-radius: 4px; 
+        }
+        .typing-indicator { 
+          align-self: flex-start; 
+          margin-left: 1rem; 
+          color: var(--text-secondary); 
+          font-style: italic;
+        }
+        .chat-input-form { 
+          display: flex; 
+          gap: 1rem; 
+          padding: 1.5rem; 
+          border-top: 1px solid var(--color-border); 
+          flex-shrink: 0; 
+          align-items: flex-end; 
+        }
+        .chat-input-form textarea {
+          flex-grow: 1; 
+          background-color: var(--color-card-background);
+          border: 1px solid var(--color-border); 
+          color: var(--text-primary);
+          padding: 0.75rem 1rem; 
+          border-radius: 20px;
+          resize: none; 
+          font-family: 'Poppins', sans-serif;
+          font-size: 1rem; 
+          max-height: 120px;
+        }
+        .chat-input-form textarea:focus { 
+          outline: none; 
+          border-color: var(--color-primary); 
+        }
+        .chat-input-form button { 
+          border: none; 
+          background: var(--color-primary); 
+          color: white; 
+          font-weight: 600; 
+          padding: 0.75rem 1.5rem; 
+          border-radius: 99px; 
+          cursor: pointer; 
+          height: 48px; 
+        }
+        .chat-input-form button:hover { 
+          background: var(--color-primary-hover); 
+        }
+
+        /* 6. DETAILS PANEL (RIGHT) */
+        .details-panel { 
+          border-left: 1px solid var(--color-border); 
+          padding: 2rem; 
+          overflow-y: auto;
+        }
+        .details-content { 
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          text-align: center; 
+          gap: 0.5rem; 
+        }
+        .details-avatar { 
+          width: 100px; 
+          height: 100px; 
+          border-radius: 50%; 
+          object-fit: cover; 
+          margin-bottom: 1rem; 
+        }
+        .details-content h3 { 
+          font-size: 1.2rem; 
+        }
+        .details-content p { 
+          color: var(--text-secondary); 
+        }
+        .details-link { 
+          display: inline-block; 
+          margin-top: 1rem; 
+          color: var(--color-primary); 
+          font-weight: 500; 
+        }
+        .details-link:hover { 
+          text-decoration: underline; 
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <div class="profile-toggle">
+            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <div class="profile-info">
+              <h3 class="profile-name">Alex Chen</h3>
+              <p class="profile-title">Senior, Computer Science</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="home.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
+                    <span>Home</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="network.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
+                    <span>Network</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link active">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
+                  <span>Profile</span>
+                </a></li>
+              </ul>
+            </nav>
+            <a href="#" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="messaging-wrapper">
+        <aside class="conversations-panel">
+            <div class="panel-header">
+                <h1>Messages</h1>
+                <input type="text" placeholder="Search direct messages..." class="search-bar">
+            </div>
+            <div class="conversations-list" id="conversations-list">
+                </div>
+        </aside>
+
+        <main class="chat-panel" id="chat-panel">
+            <div class="chat-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <h2>Select a message</h2>
+                <p>Choose from your existing conversations to start chatting.</p>
+            </div>
+            </main>
+
+        <aside class="details-panel" id="details-panel">
+             </aside>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const conversationsList = document.getElementById('conversations-list');
+            const chatPanel = document.getElementById('chat-panel');
+            const detailsPanel = document.getElementById('details-panel');
+
+            // --- MOCK DATA ---
+            // In a real app, this would come from a database.
+            const users = {
+                'jessica-lee': { name: 'Jessica Lee', title: 'Product Manager @ TechCorp', online: true },
+                'mark-davis': { name: 'Mark Davis', title: 'Senior Software Engineer', online: false },
+                'emily-carter': { name: 'Emily Carter', title: 'Data Scientist | AI/ML', online: true }
+            };
+
+            const conversations = {
+                'jessica-lee': {
+                    last_updated: '5m',
+                    messages: [
+                        { sender: 'them', text: 'Hey Alex! Great to connect. I saw your post on the new campus project.' },
+                        { sender: 'me', text: 'Thanks, Jessica! Glad you liked it. How is everything at TechCorp?' },
+                        { sender: 'them', text: 'Busy as always, but rewarding. We should catch up for coffee sometime.' }
+                    ]
+                },
+                'mark-davis': {
+                    last_updated: '2h',
+                    messages: [
+                        { sender: 'them', text: 'Do you have the notes from the alumni tech talk last week?' },
+                        { sender: 'me', text: 'Yes, I do. I\'ll send them over to your email.' }
+                    ]
+                },
+                'emily-carter': {
+                    last_updated: '1d',
+                    messages: [
+                        { sender: 'them', text: 'I have a question about the ML model you mentioned in your profile. Do you have a minute?' }
+                    ]
+                }
+            };
+
+            // --- RENDER FUNCTIONS ---
+            const renderConversationsList = () => {
+                conversationsList.innerHTML = '';
+                Object.keys(conversations).forEach(userId => {
+                    const user = users[userId];
+                    const convo = conversations[userId];
+                    const lastMessage = convo.messages.slice(-1)[0];
+                    
+                    const convoItem = document.createElement('div');
+                    convoItem.className = 'conversation-item';
+                    convoItem.dataset.userId = userId;
+
+                    convoItem.innerHTML = `
+                        <div class="convo-avatar-wrapper">
+                            <img src="https://picsum.photos/seed/${userId}/50" alt="${user.name}" class="convo-avatar">
+                            ${user.online ? '<div class="status-dot"></div>' : ''}
+                        </div>
+                        <div class="convo-details">
+                            <div class="convo-header">
+                                <h4>${user.name}</h4>
+                                <span>${convo.last_updated}</span>
+                            </div>
+                            <p>${lastMessage.text}</p>
+                        </div>
+                    `;
+                    conversationsList.appendChild(convoItem);
+                });
+            };
+            
+            const renderChat = (userId) => {
+                const user = users[userId];
+                const convo = conversations[userId];
+
+                chatPanel.innerHTML = `
+                    <div class="chat-header">
+                        <img src="https://picsum.photos/seed/${userId}/40" alt="${user.name}">
+                        <h3>${user.name}</h3>
+                    </div>
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <form class="chat-input-form" id="chat-form" data-user-id="${userId}">
+                        <textarea placeholder="Type a message..." required rows="1"></textarea>
+                        <button type="submit">Send</button>
+                    </form>
+                `;
+                
+                const messageContainer = document.getElementById('chat-messages');
+                let lastSender = null;
+                convo.messages.forEach(msg => {
+                    const isGrouped = msg.sender === lastSender;
+                    appendMessage(messageContainer, msg.text, msg.sender === 'me' ? 'sent' : 'received', isGrouped);
+                    lastSender = msg.sender;
+                });
+
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+
+                detailsPanel.innerHTML = `
+                    <div class="details-content">
+                        <img src="https://picsum.photos/seed/${userId}/100" class="details-avatar" alt="${user.name}">
+                        <h3>${user.name}</h3>
+                        <p>${user.title}</p>
+                        <a href="#" class="details-link">View Profile</a>
+                    </div>
+                `;
+                
+                const form = document.getElementById('chat-form');
+                const textarea = form.querySelector('textarea');
+                form.addEventListener('submit', handleSendMessage);
+                textarea.addEventListener('input', autoResizeTextarea);
+                textarea.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        form.requestSubmit();
+                    }
+                });
+            };
+            
+            // --- HELPER FUNCTIONS ---
+            const appendMessage = (container, text, type, isGrouped) => {
+                const bubble = document.createElement('div');
+                bubble.className = `message-bubble ${type}`;
+                if (isGrouped) {
+                    bubble.classList.add('grouped');
+                }
+                bubble.textContent = text;
+                container.appendChild(bubble);
+                container.scrollTop = container.scrollHeight;
+            };
+
+            const handleSendMessage = (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const textarea = form.querySelector('textarea');
+                const messageText = textarea.value.trim();
+                const userId = form.dataset.userId;
+
+                if (messageText) {
+                    const messageContainer = document.getElementById('chat-messages');
+                    const lastMessageEl = messageContainer.querySelector('.message-bubble:last-child');
+                    const isGrouped = lastMessageEl && lastMessageEl.classList.contains('sent');
+
+                    appendMessage(messageContainer, messageText, 'sent', isGrouped);
+                    conversations[userId].messages.push({ sender: 'me', text: messageText });
+                    textarea.value = '';
+                    textarea.style.height = 'auto'; // Reset height after sending
+                    
+                    // Simulate typing and reply for demo purposes
+                    setTimeout(() => {
+                        const typingIndicator = document.createElement('div');
+                        typingIndicator.className = 'typing-indicator';
+                        typingIndicator.textContent = `${users[userId].name.split(' ')[0]} is typing...`;
+                        messageContainer.appendChild(typingIndicator);
+                        messageContainer.scrollTop = messageContainer.scrollHeight;
+
+                        setTimeout(() => {
+                            messageContainer.removeChild(typingIndicator);
+                            const replyText = "That's interesting, tell me more!";
+                            const lastSentEl = messageContainer.querySelector('.message-bubble:last-child');
+                            const replyGrouped = lastSentEl && lastSentEl.classList.contains('received');
+                            appendMessage(messageContainer, replyText, 'received', replyGrouped);
+                            conversations[userId].messages.push({ sender: 'them', text: replyText });
+                        }, 2000);
+                    }, 500);
+                }
+            };
+
+            const autoResizeTextarea = (e) => {
+                const textarea = e.target;
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            };
+            
+            // --- EVENT LISTENERS ---
+            conversationsList.addEventListener('click', (e) => {
+                const target = e.target.closest('.conversation-item');
+                if (target) {
+                    const userId = target.dataset.userId;
+                    // Visually mark the active conversation
+                    document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
+                    target.classList.add('active');
+                    // Render the chat for the selected user
+                    renderChat(userId);
+                }
+            });
+
+            // --- INITIALIZATION ---
+            renderConversationsList();
+        });
+    </script>
+</body>
+</html>

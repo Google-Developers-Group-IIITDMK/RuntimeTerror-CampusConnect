@@ -1,0 +1,90 @@
+# ------------------------
+# OS / Editor junk
+# ------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+.vscode/
+.idea/
+*.iml
+
+# ------------------------
+# Node.js
+# ------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+.next/
+out/
+
+# ------------------------
+# Python
+# ------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+.venv/
+env/
+venv/
+.Python
+pip-log.txt
+
+# ------------------------
+# Logs
+# ------------------------
+*.log
+logs/
+*.out
+*.pid
+*.seed
+*.cover
+
+# ------------------------
+# Environment / Secrets
+# ------------------------
+.env
+.env.local
+.env.*.local
+*.secret
+*.key
+
+# ------------------------
+# Databases / Temp files
+# ------------------------
+*.sqlite3
+*.db
+*.sql
+dump.rdb
+*.tgz
+*.tar.gz
+*.zip
+
+# ------------------------
+# Coverage / Testing
+# ------------------------
+coverage/
+.coverage
+.cache
+.nyc_output
+.pytest_cache/
+jest-cache/
+jest-test-results.json
+
+# ------------------------
+# Misc
+# ------------------------
+tmp/
+temp/

@@ -1,0 +1,400 @@
+/*
+  Project: AlumniConnect Dashboard
+  Author: Gemini AI
+  Date: September 25, 2025
+*/
+
+/* 1.1. File Header & Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* 1.2. Comprehensive CSS Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html, body {
+  height: 100%;
+}
+body {
+  line-height: 1.5;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+ul, ol {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 1.3. :root Level Design Tokens (CSS Variables) */
+:root {
+    /* Color Palette */
+    --color-background: #100E19;
+    --color-primary: #8A4FFF;
+    --color-primary-hover: #7B46E5;
+    --color-card-background: #1C1A27;
+    --color-border: #2A2836;
+    --text-primary: #EAEAEB;
+    --text-secondary: #9A9A9E;
+    --text-tertiary: #5A5864;
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+
+    /* Typography */
+    --font-family-primary: 'Poppins', sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-xxl: 2rem;
+
+    /* Layout & Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 1rem;
+    --space-4: 1.5rem;
+    --space-5: 2rem;
+    --space-6: 3rem;
+    --header-height: 72px;
+
+    /* Borders & Shadows */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 1.4. Base body Styling */
+body {
+  font-family: var(--font-family-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  /* ADDED: Gradient Background */
+  background-color: var(--color-background);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(138, 79, 255, 0.05), transparent 50%);
+}
+
+/* 1.5. Global Container Class */
+.container {
+  width: 100%;
+  max-width: 1800px; 
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+}
+
+/* 2.1. The Global Header */
+.global-header {
+  height: var(--header-height);
+  background-color: var(--color-card-background);
+  border-bottom: 1px solid var(--color-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.logo h1 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+}
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+  background-color: var(--color-border);
+}
+
+/* 2.2. The Main Content Wrapper */
+.main-content-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: var(--space-5);
+  padding-top: calc(var(--header-height) + var(--space-5));
+}
+
+/* 2.3. Left Sidebar & FOLDABLE PROFILE */
+.sidebar-left {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-5));
+    height: calc(100vh - var(--header-height) - var(--space-5) * 2);
+}
+.profile-card {
+    background-color: var(--color-card-background);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+}
+.profile-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    cursor: pointer;
+}
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.profile-info {
+    flex-grow: 1;
+}
+.profile-name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+}
+.profile-title {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+.chevron-icon {
+    color: var(--text-secondary);
+    transition: transform 0.3s ease;
+}
+.profile-content {
+    padding-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* Styles for smooth transition */
+    overflow: hidden;
+    max-height: 1000px; /* Large enough to show content */
+    transition: max-height 0.4s ease-in-out, padding-top 0.4s ease;
+}
+.sidebar-nav {
+    flex-grow: 1;
+}
+.sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-semibold);
+    transition: background-color 0.2s ease;
+}
+.nav-link svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+.nav-link:hover {
+    background-color: var(--color-border);
+}
+.nav-link.active {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+.nav-link.active svg {
+    color: var(--color-white);
+}
+.btn-logout {
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+.btn-logout:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* --- COLLAPSED STATE --- */
+.profile-card.collapsed .profile-content {
+    max-height: 0;
+    padding-top: 0;
+}
+.profile-card.collapsed .chevron-icon {
+    transform: rotate(180deg);
+}
+
+
+/* 2.4. Center Feed - UPDATED CARD STYLE */
+.feed-title {
+    font-size: var(--font-size-xxl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+}
+.feed-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+.post-card {
+    background-color: var(--color-card-background);
+    border-radius: var(--radius-lg);
+    aspect-ratio: 16 / 10;
+    position: relative;
+    display: flex; /* Use flex to align content at the bottom */
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    /* Image styles */
+    background-size: cover;
+    background-position: center;
+}
+/* Dark overlay for text readability */
+.post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 100%);
+}
+.post-content {
+    padding: var(--space-3);
+    position: relative; /* To appear above the overlay */
+    z-index: 2;
+}
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--text-primary); /* Brighter on overlay */
+    margin-bottom: var(--space-2);
+}
+.post-author img {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 1px solid var(--color-primary);
+}
+.post-text {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+}
+
+/* 2.5. Right Sidebar */
+.sidebar-right {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-5));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.widget-card {
+    background-color: var(--color-card-background);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+}
+.widget-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+}
+.stories-container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+.story-item {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-primary);
+    display: grid;
+    place-items: center;
+    background-color: var(--color-border);
+    flex-shrink: 0;
+}
+.story-item img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+}
+.add-story {
+  border-style: dashed;
+  cursor: pointer;
+}
+.trending-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.hashtag {
+  background-color: var(--color-border);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+.hashtag:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
