@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 1. GLOBAL & SETUP STYLES */
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+          font-family: 'Poppins', sans-serif;
+          color: var(--text-primary);
+          background-color: var(--color-background);
+          background-image: 
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        svg { vertical-align: middle; }
+
+        /* 2. COLLAPSIBLE SIDEBAR */
+        .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+        .btn-logout:hover { background-color: var(--color-primary-hover); }
+
+        /* 3. MAIN LAYOUT FOR EXPLORE PAGE */
+        .main-wrapper {
+          margin-left: var(--sidebar-collapsed-width);
+          padding: 2rem;
+          transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-left:hover ~ .main-wrapper {
+          margin-left: var(--sidebar-expanded-width);
+        }
+        .explore-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 1024px) {
+            .explore-container { grid-template-columns: minmax(0, 3fr) 1fr; }
+        }
+        .explore-main { display: flex; flex-direction: column; gap: 2.5rem; }
+        .explore-sidebar-sticky { position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        /* 4. GENERIC & SECTION STYLES */
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-header { margin-bottom: 1.5rem; }
+        .section-header h2 { font-size: 1.5rem; font-weight: 600; }
+        .section-header p { color: var(--text-secondary); }
+
+        /* 5. SPECIFIC COMPONENT STYLES */
+        
+        /* Happening Now Section */
+        .events-scroller { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: none; }
+        .events-scroller::-webkit-scrollbar { display: none; }
+        .event-card {
+            background-color: var(--color-card-background);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            flex: 0 0 300px; /* Prevent shrinking, set base width */
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .event-image { height: 140px; background-size: cover; background-position: center; }
+        .event-info { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .event-info h3 { font-weight: 600; }
+        .event-meta { display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; }
+        .live-badge { background-color: var(--color-danger); color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; }
+
+        /* Trending Section */
+        .trending-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .trending-tag { background-color: var(--color-card-background); border: 1px solid var(--color-border); padding: 0.75rem 1.25rem; border-radius: 99px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
+        .trending-tag:hover { background-color: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+        .trending-tag span { color: var(--text-secondary); margin-right: 0.5rem; }
+
+        /* Project Showcase */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .project-card { background-color: var(--color-card-background); border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; }
+        .project-card-image { height: 160px; background-size: cover; background-position: center; }
+        .project-card-content { padding: 1rem; }
+        .project-card-content h3 { font-weight: 600; margin-bottom: 0.25rem; }
+        .project-card-content p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .project-tag { background-color: var(--color-border); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; }
+
+        /* Right Sidebar Widgets */
+        .widget-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 1.5rem; }
+        .widget-card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+        .club-list li:not(:last-child) { border-bottom: 1px solid var(--color-border); }
+        .club-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 0.5rem; }
+        .club-item-logo { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+        .club-item-info { flex-grow: 1; }
+        .club-item-info h4 { font-weight: 500; }
+        .club-item-info p { font-size: 0.85rem; color: var(--text-secondary); }
+        .btn-view { background: var(--color-border); color: var(--text-primary); font-weight: 500; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.2s; }
+        .btn-view:hover { background: var(--color-primary); color: var(--color-white); }
+    </style>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <div class="profile-toggle">
+            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+            <div class="profile-info">
+              <h3 class="font-semibold text-white">Alex Chen</h3>
+              <p class="text-sm text-gray-400">Senior, CompSci</p>
+            </div>
+        </div>
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="home.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg><span>Home</span></a></li>
+                <li><a href="explore.html" class="nav-link active"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg><span>Explore</span></a></li>
+                <li><a href="network.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg><span>Network</span></a></li>
+                <li><a href="message.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg><span>Message</span></a></li>
+                <li><a href="alumni.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg><span>Alumni</span></a></li>
+                <li><a href="code-connect.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg><span>Code & Connect</span></a></li>
+                <li><a href="profile.html" class="nav-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg><span>Profile</span></a></li>
+              </ul>
+            </nav>
+            <a href="#" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <div class="explore-container">
+            <main class="explore-main">
+                <h1>Explore Campus</h1>
+                
+                <section>
+                    <div class="section-header">
+                        <h2>Happening Now 🔴</h2>
+                        <p>Live events and workshops around you.</p>
+                    </div>
+                    <div class="events-scroller">
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/robotics/400/200');"></div>
+                            <div class="event-info">
+                                <h3>Robotics Workshop</h3>
+                                <div class="event-meta">
+                                    <span class="live-badge">LIVE</span>
+                                    <span>Mech Block, Room 301</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/music/400/200');"></div>
+                            <div class="event-info">
+                                <h3>Open Mic Night</h3>
+                                <div class="event-meta">
+                                    <span>Tonight, 7 PM @ OAT</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/startup/400/200');"></div>
+                            <div class="event-info">
+                                <h3>E-Cell Startup Pitch</h3>
+                                <div class="event-meta">
+                                    <span>Tomorrow, 10 AM @ Main Audi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-header">
+                        <h2>Trending on Campus 🔥</h2>
+                        <p>See what everyone's talking about.</p>
+                    </div>
+                    <div class="trending-tags">
+                        <a href="#" class="trending-tag"><span>#</span>TechFest2025</a>
+                        <a href="#" class="trending-tag"><span>#</span>ExamWeek</a>
+                        <a href="#" class="trending-tag"><span>#</span>Placements</a>
+                        <a href="#" class="trending-tag"><span>#</span>MessFoodChronicles</a>
+                        <a href="#" class="trending-tag"><span>#</span>Confessions</a>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-header">
+                        <h2>Project Showcase 🚀</h2>
+                        <p>Amazing projects built by your peers.</p>
+                    </div>
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project1/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>AI-Powered Note Summarizer</h3>
+                                <p>By Aisha Khan</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#ML</span>
+                                    <span class="project-tag">#Python</span>
+                                    <span class="project-tag">#NLP</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project2/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>Campus Navigation App</h3>
+                                <p>By Rohan Gupta</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#React</span>
+                                    <span class="project-tag">#Firebase</span>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project3/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>Automated Plant Watering System</h3>
+                                <p>By Vikram Singh</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#IoT</span>
+                                    <span class="project-tag">#Arduino</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+            <aside class="explore-sidebar">
+                <div class="explore-sidebar-sticky">
+                    <div class="widget-card">
+                        <h2>Clubs & Groups</h2>
+                        <ul class="club-list">
+                            <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/gdgclub/60" class="club-item-logo" alt="GDG Logo">
+                                    <div class="club-item-info">
+                                        <h4>GDG Tech Club</h4>
+                                        <p>120 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/musicclub/60" class="club-item-logo" alt="Music Club Logo">
+                                    <div class="club-item-info">
+                                        <h4>Symphony Music Club</h4>
+                                        <p>85 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/sportsclub/60" class="club-item-logo" alt="Sports Club Logo">
+                                    <div class="club-item-info">
+                                        <h4>Spartans Sports Club</h4>
+                                        <p>250 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+            </aside>
+        </div>
+    </div>
+</body>
+</html>
