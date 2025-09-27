@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .message {
+      margin-bottom: 10px; 
+      padding: 8px 12px; 
+      border-radius: 18px; 
+      max-width: 70%; 
+      word-wrap: break-word;
+      display: inline-block;
+    }
+    /* text-base font-medium bg-gradient-pink text-white rounded-lg rounded-br-none px-4 py-2.5 */
+    .sent { background-color: #f42547; color: white; margin-left: auto; }
+    .received { background-color: #eee; color: black; margin-right: auto; }
+    #chat-box { overflow-y: auto; flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+    .match-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+    .match-item:hover { background-color: #f9f9f9; }
+    .match-item.active { background-color: #fef2f2; font-weight: bold; }
+  </style>
+  <script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        },
+      },
+    },
+  }
+</script>
+</head>
+<body class="bg-gray-100 h-screen flex font-display">
+
+    
+  <!-- Sidebar -->
+  <aside class="hidden md:flex flex-col w-64 bg-white border-r">
+    <div class="p-4 border-b">
+      <h2 class="text-xl font-bold text-gray-700">Matches</h2>
+    </div>
+    <div id="matches-list" class="flex-1 overflow-y-auto"></div>
+  </aside>
+
+  <!-- Main Chat -->
+  <main class="flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center gap-3 p-4 bg-white border-b">
+      <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+      <div>
+        <h3 id="chat-with" class="font-semibold text-gray-800">Chat</h3>
+        <p class="text-sm text-gray-500">Online</p>
+      </div>
+    </header>
+
+    <!-- Chat Box -->
+    <div id="chat-box"></div>
+
+    <!-- Input -->
+    <footer class="p-4 bg-white border-t flex items-center gap-2">
+      <input 
+        id="message-input" 
+        type="text" 
+        placeholder="Type a message..."
+        class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400"
+      />
+      <button 
+        id="send-btn" 
+        class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full font-medium">
+        Send
+      </button>
+    </footer>
+  </main>
+
+<script>
+const SUPABASE_URL = "https://pbuyszhhtmgaubzylmoh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUserId, matchId, otherUserId;
+const chatBox = document.getElementById('chat-box');
+const input = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const matchesList = document.getElementById('matches-list');
+const chatWith = document.getElementById('chat-with');
+let subscription;
+
+async function initChat() {
+  // Get logged-in user
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return alert("You must be logged in.");
+  currentUserId = user.id;
+
+  // Load matches dynamically
+  const { data: matches, error: matchError } = await supabase
+    .from("matches")
+    .select("*")
+    .or(`user_a.eq.${currentUserId},user_b.eq.${currentUserId}`);
+  if (matchError) return console.error(matchError);
+
+  if (!matches || matches.length === 0) {
+    matchesList.innerHTML = "<p class='p-4 text-gray-500'>No matches found yet.</p>";
+    return;
+  }
+
+  matchesList.innerHTML = "";
+//   matches.forEach(m => {
+//     const other = m.user_a === currentUserId ? m.user_b : m.user_a;
+//     const div = document.createElement("div");
+//     div.className = "match-item";
+//     div.textContent = other;
+//     div.onclick = () => selectMatch(m);
+//     matchesList.appendChild(div);
+//   });
+for (const m of matches) {
+    const other = m.user_a === currentUserId ? m.user_b : m.user_a;
+
+    // Fetch other user's full name from profiles
+    const { data: otherProfile, error: profileErr } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", other)
+      .single();
+
+    const otherName = otherProfile?.full_name || other; // fallback to ID
+
+    const div = document.createElement("div");
+    div.className = "match-item";
+    div.textContent = otherName;
+
+    div.dataset.userid = other;
+
+    div.onclick = () => selectMatch(m, otherName);
+    matchesList.appendChild(div);
+  }
+
+  // select first match by default
+//   selectMatch(matches[0]);
+const firstOther = matches[0].user_a === currentUserId ? matches[0].user_b : matches[0].user_a;
+  const { data: firstProfile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", firstOther)
+    .single();
+
+  selectMatch(matches[0], firstProfile?.full_name || firstOther);
+}
+
+function selectMatch(match, otherName) {
+  // unsubscribe previous if any
+  if (subscription) subscription.unsubscribe();
+
+  matchId = match.id;
+  otherUserId = (match.user_a === currentUserId) ? match.user_b : match.user_a;
+  chatWith.textContent = otherName;
+
+  // highlight active match
+  Array.from(matchesList.children).forEach(el => el.classList.remove('active'));
+  Array.from(matchesList.children).forEach(el => {
+    if (el.dataset.userid === otherUserId) el.classList.add('active');
+  });
+
+  loadMessages();
+  subscribeToMessages();
+}
+
+async function loadMessages() {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('match_id', matchId)
+    .order('created_at', { ascending: true });
+  if (error) return console.error(error);
+
+  chatBox.innerHTML = '';
+  data.forEach(msg => appendMessage(msg));
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function appendMessage(msg) {
+  const div = document.createElement('div');
+//   div.className = 'message ' + (msg.sender_id === currentUserId ? 'sent' : 'received');
+if (msg.sender_id === currentUserId) {
+    // Sent messages
+    div.className = `
+      max-w-xs md:max-w-md lg:max-w-lg 
+      text-base font-medium 
+      text-white
+      px-4 py-2.5 mb-2 self-end
+    `;
+    div.style.background = "linear-gradient(to right, #f42547, #ff6b81)";
+     div.style.borderRadius = "2rem";
+    div.style.borderBottomRightRadius = "0"; // keeps chat bubble shape
+  } else {
+    // Received messages
+    div.className = `
+      max-w-xs md:max-w-md lg:max-w-lg 
+      text-base font-medium 
+      bg-gray-200 text-gray-900 
+      px-4 py-2.5 mb-2 self-start
+    `;
+    div.style.borderRadius = "2rem";
+    div.style.borderBottomLeftRadius = "0"; // keeps chat bubble shape
+  }
+  div.textContent = msg.content;
+  chatBox.appendChild(div);
+}
+
+function subscribeToMessages() {
+  subscription = supabase
+    .channel(`messages:${matchId}`, { broadcast: true })
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: `match_id=eq.${matchId}`
+    }, payload => {
+      appendMessage(payload.new);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }).subscribe();
+}
+
+sendBtn.addEventListener('click', async () => {
+  const content = input.value.trim();
+  if (!content) return;
+
+  const { error } = await supabase
+    .from('messages')
+    .insert([{ match_id: matchId, sender_id: currentUserId, receiver_id: otherUserId, content, read: false }]);
+  if (error) return console.error(error);
+  input.value = '';
+});
+
+initChat();
+</script>
+</body>
+</html>
