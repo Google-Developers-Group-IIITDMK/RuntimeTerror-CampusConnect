@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Your Profile - AlumniConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --color-danger: #e74c3c;
+          --color-success: #2ecc71;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; color: var(--text-primary); background-color: var(--color-background); -webkit-font-smoothing: antialiased; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        svg { vertical-align: middle; }
+        
+        .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; overflow-x: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; flex-shrink: 0; padding: initial}
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        /* .nav-link.active { background-color: var(--color-primary); color: var(--color-white); } 
+        .nav-link.active svg { color: var(--color-white); }  */
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; margin-top: 1rem; }
+
+        .main-content-wrapper { margin-left: var(--sidebar-collapsed-width); padding: 2rem; transition: margin-left 0.3s ease-in-out; height: 100vh; overflow-y: auto; scroll-behavior: smooth;}
+        .sidebar-left:hover ~ .main-content-wrapper { margin-left: var(--sidebar-expanded-width); }
+        
+        .form-container { max-width: 1200px; margin: 0 auto; }
+        .form-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 2rem; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; }
+        
+        .master-form-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+        @media (min-width: 1024px) { .master-form-grid { grid-template-columns: minmax(0, 2fr) 1fr; } }
+        
+        .form-main-content { display: flex; flex-direction: column; gap: 2rem; }
+        .form-sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        .form-sidebar-sticky-container { position: sticky; top: 0; display: flex; flex-direction: column; gap: 2rem; }
+
+        fieldset { border: 1px solid var(--color-border); border-radius: 12px; padding: 1.5rem; }
+        legend { font-size: 1.25rem; font-weight: 600; color: var(--color-primary); padding: 0 0.75rem; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem 1.5rem; }
+        @media (min-width: 576px) { .form-grid.grid-col-2 { grid-template-columns: 1fr 1fr; } }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .email-group { display: flex; align-items: flex-end; gap: 0.5rem; }
+        .email-group input { flex-grow: 1; }
+        label { font-weight: 500; font-size: 0.9rem; color: var(--text-secondary); }
+        .helper-text { font-size: 0.8rem; color: var(--text-secondary); margin-top: -0.25rem; }
+        input, select, textarea { width: 100%; background-color: var(--color-background); border: 1px solid var(--color-border); color: var(--text-primary); padding: 0.65rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: 'Poppins', sans-serif; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--color-primary); }
+        input:read-only { background-color: #2a2836; cursor: not-allowed; }
+        
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-sm { padding: 0.65rem 1rem; }
+        .btn-primary { background-color: var(--color-primary); color: var(--color-white); }
+        .btn-primary:disabled { background-color: var(--color-border); cursor: not-allowed; }
+        .btn-secondary { background-color: transparent; border: 1px solid var(--color-border); color: var(--text-primary); }
+        .btn-add { background-color: var(--color-border); color: var(--text-primary); width: 100%; margin-top: 1rem;}
+        .btn-add:hover { background-color: var(--color-primary-hover); }
+
+        .dynamic-item { display: grid; grid-template-columns: 1fr auto; align-items: flex-end; gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1.5rem; margin-top: 1.5rem; }
+        .dynamic-item:first-child { margin-top: 0; }
+        .dynamic-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .dynamic-item-fields { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 768px) {
+            .exp-fields { grid-template-columns: 2fr 2fr 1fr; }
+            .ach-fields { grid-template-columns: 1fr 1fr; }
+        }
+        .btn-remove { background-color: transparent; border: 1px solid var(--color-danger); color: var(--color-danger); height: fit-content; padding: 0.65rem; line-height: 1; }
+        .btn-remove:hover { background-color: var(--color-danger); color: var(--color-white); }
+        
+        .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; background-color: var(--color-background); border: 1px solid var(--color-border); border-radius: 8px; padding: 0.5rem; min-height: 48px; margin-bottom: 0.5rem; }
+        .tag { background-color: var(--color-primary); color: var(--color-white); padding: 0.3rem 0.7rem; border-radius: 6px; display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+        .tag-remove { cursor: pointer; font-weight: bold; font-size: 1.1rem; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
+        .tag-remove:hover { opacity: 1; }
+
+        .image-preview-container { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+        .image-preview { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; background-color: var(--color-background); border: 1px dashed var(--color-border); }
+        .image-preview.circle { border-radius: 50%; }
+
+        .form-nav ul li a { display: block; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 500; color: var(--text-secondary); border-left: 3px solid transparent; transition: all 0.2s ease; }
+        .form-nav ul li a:hover { background-color: var(--color-border); color: var(--text-primary); }
+        .form-nav ul li a.active { color: var(--color-primary); background-color: rgba(138, 79, 255, 0.1); border-left-color: var(--color-primary); }
+
+        .toggle-switch { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; }
+        .toggle-switch input[type="checkbox"] { display: none; }
+        .toggle-switch .slider-wrapper { position: relative; }
+        .toggle-switch .slider { display: inline-block; width: 44px; height: 24px; background-color: var(--color-border); border-radius: 99px; cursor: pointer; transition: background-color 0.2s; }
+        .toggle-switch .slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background-color: var(--color-white); border-radius: 50%; transition: transform 0.2s; }
+        .toggle-switch input:checked + .slider { background-color: var(--color-primary); }
+        .toggle-switch input:checked + .slider::before { transform: translateX(20px); }
+
+        .form-actions { background-color: var(--color-card-background); padding: 1rem 2rem 0; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end; gap: 1rem; margin-top: auto; }
+        
+        #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--color-success); color: var(--color-white); padding: 1rem 2rem; border-radius: 8px; z-index: 200; transition: bottom 0.5s ease-in-out; }
+        #toast-notification.error { background-color: var(--color-danger); }
+        #toast-notification.show { bottom: 2rem; }
+        .profile-link {
+            text-decoration: none; 
+            display: block; 
+        }
+
+        .profile-toggle {
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-toggle:hover {
+            background-color: #646464; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <a href="profileN.html" class="profile-link">
+            <div class="profile-toggle">
+                <img id="s-img" src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
+                <div class="profile-info">
+                <h3 id="s-name" class="profile-name"></h3>
+                <p id="s-title" class="profile-title"></p>
+                </div>
+            </div>
+        </a>
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="feed.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                    </svg>
+                    <span>Feed</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="cupid.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128,216a8,8,0,0,1-5.66-2.34C58.34,159.4,24,129.74,24,96A64,64,0,0,1,128,32a64,64,0,0,1,104,64c0,33.74-34.34,63.4-98.34,117.66A8,8,0,0,1,128,216Z"></path>
+                    </svg>
+                    <span>Cupid</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+              </ul>
+            </nav>
+            <a href="loginN.html" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-content-wrapper" id="main-content-wrapper">
+        <div class="form-container">
+            <div class="form-card">
+                <form id="profile-form">
+                    <h1>Edit Your Profile</h1>
+
+                    <div class="master-form-grid">
+                        <main class="form-main-content">
+                            <fieldset id="section-basic">
+                                <legend>Basic Information</legend>
+                                <div class="form-grid grid-col-2">
+                                    <div class="form-group"><label for="full-name">Full Name</label><input type="text" id="full-name" required></div>
+                                    <div class="form-group"><label for="username">Username</label><input type="text" id="username" required></div>
+                                    <div class="form-group">
+                                        <label for="email">Account Email</label>
+                                        <div class="email-group">
+                                            <input type="email" id="email" readonly>
+                                            <button type="button" id="change-email-btn" class="btn btn-secondary btn-sm">Change</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group"><label for="current-year">Current Status</label><select id="current-year"><option value="Student">Student</option><option value="Alumnus" selected>Alumnus</option></select></div>
+                                    <div class="form-group full-width"><label for="title">Title</label><input type="text" id="title" placeholder="e.g., Software Engineer | AI Enthusiast"></div>
+                                    <div class="form-group full-width"><label for="about">About</label><input type="text" id="about" placeholder="Tell us about yourself"></div>
+                                </div>
+                            </fieldset>
+                            <fieldset id="section-links">
+                                <legend>Social & Coding Links</legend>
+                                <div class="form-grid grid-col-2">
+                                        <div class="form-group"><label for="linkedin-url">LinkedIn </label><input type="url" id="linkedin-url" placeholder="https://linkedin.com/in/yourname"></div>
+                                        <div class="form-group"><label for="github-url">GitHub </label><input type="url" id="github-url" placeholder="https://github.com/yourusername"></div>
+                                        <div class="form-group"><label for="leetcode-url">LeetCode </label><input type="url" id="leetcode-url" placeholder="https://leetcode.com/yourusername"></div>
+                                        <div class="form-group"><label for="codeforces-url">Codeforces </label><input type="url" id="codeforces-url" placeholder="https://codeforces.com/profile/yourusername"></div>
+                                        <div class="form-group"><label for="codechef-url">Twitter </label><input type="url" id="codechef-url" placeholder="https://www.codechef.com/users/yourusername"></div>
+                                        <div class="form-group full-width"><label for="pinned-repos">Pinned Repositories</label><textarea id="pinned-repos" rows="2" placeholder="https://github.com/user/repo1, https://github.com/user/repo2"></textarea><small class="helper-text">Enter full GitHub URLs, separated by commas.</small></div>
+                                </div>
+                            </fieldset>
+
+                             <fieldset id="section-skills">
+                                <legend>Skills & Expertise</legend>
+                                <div class="form-group full-width">
+                                    <input type="text" id="skills-input" placeholder="e.g., Python, React, System Design...">
+                                </div>
+                            </fieldset>
+                            
+                            <fieldset id="section-experience">
+                                <legend>Work Experience</legend>
+                                <div id="experience-container"></div>
+                                <button type="button" id="add-experience-btn" class="btn btn-add">+ Add Experience</button>
+                            </fieldset>
+        
+                            <fieldset id="section-achievements">
+                                <legend>Achievements</legend>
+                                <div id="achievements-container"></div>
+                                <button type="button" id="add-achievement-btn" class="btn btn-add">+ Add Achievement</button>
+                            </fieldset>
+                        </main>
+
+                        <aside class="form-sidebar">
+                            <div class="form-sidebar-sticky-container">
+                                <nav class="form-nav" id="form-nav">
+                                    <fieldset>
+                                        <legend>Navigation</legend>
+                                        <ul>
+                                            <li><a href="#section-basic" class="nav-section-link active">Basic Information</a></li>
+                                            <li><a href="#section-links" class="nav-section-link">Profiles</a></li>
+                                            <li><a href="#section-skills" class="nav-section-link">Skills</a></li>
+                                            <li><a href="#section-experience" class="nav-section-link">Experience</a></li>
+                                            <li><a href="#section-achievements" class="nav-section-link">Achievements</a></li>
+                                            <li><a href="#section-images" class="nav-section-link">Images</a></li>
+                                            <li><a href="#section-status" class="nav-section-link">Status</a></li>
+                                        </ul>
+                                    </fieldset>
+                                </nav>
+    
+                                <fieldset id="section-images">
+                                    <legend>Profile Images</legend>
+                                    <div class="form-group">
+                                        <label for="avatar-file">Profile Picture</label>
+                                        <div class="image-preview-container">
+                                            <img src="https://via.placeholder.com/70" alt="Avatar Preview" class="image-preview circle" id="avatar-preview">
+                                            <input type="file" id="avatar-file" accept="image/png, image/jpeg">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="banner-file">Banner Image</label>
+                                        <div class="image-preview-container">
+                                            <img src="https://via.placeholder.com/70" alt="Banner Preview" class="image-preview" id="banner-preview">
+                                            <input type="file" id="banner-file" accept="image/png, image/jpeg">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                
+                                <fieldset id="section-status">
+                                    <legend>Your Status</legend>
+                                    <div class="form-grid">
+                                        <div class="form-group full-width toggle-switch">
+                                            <label for="open-to-mentoring">Open to Mentoring</label>
+                                            <label class="slider-wrapper">
+                                                <input type="checkbox" id="open-to-mentoring">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group full-width toggle-switch">
+                                            <label for="hiring-for-team">Hiring for my team</label>
+                                            <label class="slider-wrapper">
+                                                <input type="checkbox" id="hiring-for-team">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+    
+                            </div>
+                        </aside>
+                    </div>
+                </form>
+                <div class="form-actions">
+                    <a href="profileN.html" id="cancel-btn" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" form="profile-form" id="save-button" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast-notification"></div>
+
+    <script>
+  const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  let userId = null;
+
+  async function loadUserData() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      console.error("Not logged in:", error);
+      window.location.href = "loginN.html";
+      return;
+    }
+    userId = user.id;
+
+    // Fetch from profiles
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (profile) {
+      document.getElementById("full-name").value = profile.full_name || "";
+      document.getElementById("s-name").textContent = profile.full_name || "";
+      document.getElementById("username").value = profile.username || "";
+      document.getElementById("email").value = user.email || "";
+      document.getElementById("current-year").value = profile.status || "Alumnus";
+      document.getElementById("title").value = profile.title || "";
+      document.getElementById("s-title").textContent = profile.title || "";
+      document.getElementById("about").value = profile.about || "";
+      if (profile.avatar_url) {
+        document.getElementById("avatar-preview").src = profile.avatar_url;
+        document.getElementById("s-img").src = profile.avatar_url;
+      }
+      if (profile.banner_url) {
+        document.getElementById("banner-preview").src = profile.banner_url;
+      }
+    }
+
+    // Fetch from coders
+    const { data: coder, error: coderError } = await supabase
+      .from("coders")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (coder) {
+      document.getElementById("github-url").value = coder.github || "";
+      document.getElementById("linkedin-url").value = coder.linkedin || "";
+      document.getElementById("leetcode-url").value = coder.leetcode || "";
+      document.getElementById("codeforces-url").value = coder.codeforces || "";
+      document.getElementById("codechef-url").value = coder.twitter || "";
+    }
+  }
+
+  async function saveUserData(e) {
+    e.preventDefault();
+    if (!userId) return;
+
+    // Gather values
+    const profileData = {
+      id: userId,
+      username: document.getElementById("username").value,
+      full_name: document.getElementById("full-name").value,
+      status: document.getElementById("current-year").value,
+      title: document.getElementById("title").value,
+      about: document.getElementById("about").value,
+      avatar_url: document.getElementById("avatar-preview").src,
+      banner_url: document.getElementById("banner-preview").src
+    };
+
+    const coderData = {
+      id: userId,
+      github: document.getElementById("github-url").value,
+      linkedin: document.getElementById("linkedin-url").value,
+      leetcode: document.getElementById("leetcode-url").value,
+      codeforces: document.getElementById("codeforces-url").value,
+      twitter: document.getElementById("codechef-url").value,
+      score: 0 // init only if new
+    };
+
+    // Save profile
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert(profileData, { onConflict: "id" });
+
+    if (profileError) {
+      showToast("Error saving profile", true);
+      return;
+    }
+
+    // Save coders
+    const { error: coderError } = await supabase
+      .from("coders")
+      .upsert(coderData, { onConflict: "id" });
+
+    if (coderError) {
+      showToast("Error saving coder data", true);
+      return;
+    }
+
+    showToast("Profile updated successfully!");
+  }
+
+  function showToast(message, isError = false) {
+    const toast = document.getElementById("toast-notification");
+    toast.textContent = message;
+    toast.classList.add("show");
+    toast.classList.toggle("error", isError);
+    setTimeout(() => toast.classList.remove("show"), 3000);
+  }
+
+  document.getElementById("profile-form").addEventListener("submit", saveUserData);
+  loadUserData();
+</script>
+
+</body>
+</html>
