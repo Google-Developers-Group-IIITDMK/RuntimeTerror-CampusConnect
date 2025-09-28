@@ -2,7 +2,7 @@
 <html class="dark" lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>ConnectU - Feed</title>
+<title>CampusConnect - Feed</title>
 <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -11,7 +11,6 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-    /* 1. GLOBAL STYLES & SETUP */
     :root {
         --color-background: #100E19;
         --color-primary: #8A4FFF;
@@ -45,7 +44,6 @@
     ul { list-style: none; }
     svg { vertical-align: middle; }
 
-    /* 2. COLLAPSIBLE SIDEBAR STYLES */
     .sidebar-left {
         position: fixed; top: 0; left: 0; height: 100vh;
         background-color: var(--color-card-background);
@@ -64,14 +62,13 @@
     .sidebar-left:hover .sidebar-content { opacity: 1; }
     .sidebar-nav { flex-grow: 1; }
     .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
-    /* .nav-link.active { background-color: var(--color-primary); color: var(--color-white); } */
+    .nav-link.active { background-color: var(--color-primary); color: var(--color-white); } */
     .nav-link:hover { background-color: var(--color-border); }
-    /* .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); } */
+    .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); } */
     .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
     .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
     .btn-logout:hover { background-color: var(--color-primary-hover); }
 
-    /* 3. MAIN LAYOUT WRAPPER */
     .main-wrapper {
         margin-left: var(--sidebar-collapsed-width);
         transition: margin-left 0.3s ease-in-out;
@@ -82,8 +79,8 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .profile-link {
-        text-decoration: none; /* remove underline */
-        display: block; /* makes the whole div clickable */
+        text-decoration: none; 
+        display: block; 
     }
 
     .profile-toggle {
@@ -125,7 +122,7 @@
     <div class="sidebar-content">
         <nav class="sidebar-nav">
           <ul>
-            <li><a href="feedN.html" class="nav-link">
+            <li><a href="feedN.html" class="nav-link active">
                     <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
                     </svg>
@@ -147,11 +144,11 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="alumani.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
-                    <span>Alumni</span>
+                    <span>Networking</span>
                 </a></li>
-                <li><a href="code-connect.html" class="nav-link active">
+                <li><a href="code-connect.html" class="nav-link ">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
                     <span>Code & Connect</span>
                 </a></li>
@@ -178,17 +175,14 @@
                   <textarea id="post-input" class="w-full resize-none bg-transparent focus:outline-none placeholder-gray-400 text-lg" placeholder="What's on your mind?"></textarea>
                   <div class="flex justify-between items-center mt-2">
                     <div class="image-preview-container">
-                      <!-- Preview (hidden until file selected) -->
                       <img src="" 
                           alt="File Preview" 
                           class="image-preview rounded-lg" 
                           id="file-preview" 
                           style="display: none; width:70px; height:70px; object-fit:cover;" />
 
-                      <!-- Hidden file input -->
                       <input type="file" id="fileInput" accept="image/*" style="display:none;" />
 
-                      <!-- Attach button -->
                       <button id="attachBtn" 
                               class="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                         <span>Attach</span>
@@ -289,7 +283,6 @@
         }
         
         currentProfile = profile;
-        // Update DOM with fetched data
         document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
         document.getElementById("s-title").textContent = profile.title || "";
         
@@ -349,18 +342,15 @@
   const feedContainer = document.querySelector('#posts'); 
   const textarea = document.querySelector('textarea');
 
-  // 📂 Attach button setup
   const attachBtn = document.getElementById("attachBtn");
   const fileInput = document.getElementById("fileInput");
   const filePreview = document.getElementById("file-preview");
 
-  // Open file dialog
   attachBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // prevent accidental form submit
+    e.preventDefault(); 
     fileInput.click();
   });
 
-  // Show preview
   fileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -389,7 +379,7 @@
         .from("post-images")
         .upload(filePath, file, {
           cacheControl: "3600",
-          upsert: true,   // ⚡ overwrite if same filename exists
+          upsert: true,  
           contentType: file.type
         });
         console.log("Upload response:", uploadData, uploadError);
@@ -397,7 +387,6 @@
       if (uploadError) {
         console.error("Error uploading file:", uploadError);
       } else {
-        // ✅ Get a public URL
         const { data: publicUrlData } = supabase.storage
           .from("post-images")
           .getPublicUrl(filePath);
@@ -450,8 +439,8 @@
 
     feedContainer.prepend(postCard);
     textarea.value = '';
-    filePreview.style.display = "none"; // reset preview after posting
-    fileInput.value = ""; // reset file input
+    filePreview.style.display = "none"; 
+    fileInput.value = ""; 
   });
 </script> 
 
