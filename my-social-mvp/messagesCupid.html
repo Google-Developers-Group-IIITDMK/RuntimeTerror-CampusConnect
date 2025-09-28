@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chat</title>
+  <title>Cupid - Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -14,7 +14,6 @@
       word-wrap: break-word;
       display: inline-block;
     }
-    /* text-base font-medium bg-gradient-pink text-white rounded-lg rounded-br-none px-4 py-2.5 */
     .sent { background-color: #f42547; color: white; margin-left: auto; }
     .received { background-color: #eee; color: black; margin-right: auto; }
     #chat-box { overflow-y: auto; flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
@@ -37,7 +36,6 @@
 <body class="bg-gray-100 h-screen flex font-display">
 
     
-  <!-- Sidebar -->
   <aside class="hidden md:flex flex-col w-64 bg-white border-r">
     <div class="p-4 border-b">
       <h2 class="text-xl font-bold text-gray-700">Matches</h2>
@@ -45,9 +43,7 @@
     <div id="matches-list" class="flex-1 overflow-y-auto"></div>
   </aside>
 
-  <!-- Main Chat -->
   <main class="flex-1 flex flex-col">
-    <!-- Header -->
     <header class="flex items-center gap-3 p-4 bg-white border-b">
       <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
       <div>
@@ -56,10 +52,8 @@
       </div>
     </header>
 
-    <!-- Chat Box -->
     <div id="chat-box"></div>
 
-    <!-- Input -->
     <footer class="p-4 bg-white border-t flex items-center gap-2">
       <input 
         id="message-input" 
@@ -89,12 +83,10 @@ const chatWith = document.getElementById('chat-with');
 let subscription;
 
 async function initChat() {
-  // Get logged-in user
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) return alert("You must be logged in.");
   currentUserId = user.id;
 
-  // Load matches dynamically
   const { data: matches, error: matchError } = await supabase
     .from("matches")
     .select("*")
@@ -118,14 +110,13 @@ async function initChat() {
 for (const m of matches) {
     const other = m.user_a === currentUserId ? m.user_b : m.user_a;
 
-    // Fetch other user's full name from profiles
     const { data: otherProfile, error: profileErr } = await supabase
       .from("profiles")
       .select("full_name")
       .eq("id", other)
       .single();
 
-    const otherName = otherProfile?.full_name || other; // fallback to ID
+    const otherName = otherProfile?.full_name || other; 
 
     const div = document.createElement("div");
     div.className = "match-item";
@@ -137,8 +128,6 @@ for (const m of matches) {
     matchesList.appendChild(div);
   }
 
-  // select first match by default
-//   selectMatch(matches[0]);
 const firstOther = matches[0].user_a === currentUserId ? matches[0].user_b : matches[0].user_a;
   const { data: firstProfile } = await supabase
     .from("profiles")
@@ -150,14 +139,12 @@ const firstOther = matches[0].user_a === currentUserId ? matches[0].user_b : mat
 }
 
 function selectMatch(match, otherName) {
-  // unsubscribe previous if any
   if (subscription) subscription.unsubscribe();
 
   matchId = match.id;
   otherUserId = (match.user_a === currentUserId) ? match.user_b : match.user_a;
   chatWith.textContent = otherName;
 
-  // highlight active match
   Array.from(matchesList.children).forEach(el => el.classList.remove('active'));
   Array.from(matchesList.children).forEach(el => {
     if (el.dataset.userid === otherUserId) el.classList.add('active');
@@ -182,9 +169,7 @@ async function loadMessages() {
 
 function appendMessage(msg) {
   const div = document.createElement('div');
-//   div.className = 'message ' + (msg.sender_id === currentUserId ? 'sent' : 'received');
 if (msg.sender_id === currentUserId) {
-    // Sent messages
     div.className = `
       max-w-xs md:max-w-md lg:max-w-lg 
       text-base font-medium 
@@ -193,9 +178,8 @@ if (msg.sender_id === currentUserId) {
     `;
     div.style.background = "linear-gradient(to right, #f42547, #ff6b81)";
      div.style.borderRadius = "2rem";
-    div.style.borderBottomRightRadius = "0"; // keeps chat bubble shape
+    div.style.borderBottomRightRadius = "0"; 
   } else {
-    // Received messages
     div.className = `
       max-w-xs md:max-w-md lg:max-w-lg 
       text-base font-medium 
@@ -203,7 +187,7 @@ if (msg.sender_id === currentUserId) {
       px-4 py-2.5 mb-2 self-start
     `;
     div.style.borderRadius = "2rem";
-    div.style.borderBottomLeftRadius = "0"; // keeps chat bubble shape
+    div.style.borderBottomLeftRadius = "0";
   }
   div.textContent = msg.content;
   chatBox.appendChild(div);
