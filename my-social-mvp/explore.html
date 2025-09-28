@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore - AlumniConnect</title>
+    <title>Explore - CampusConnect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,7 +42,6 @@
         ul { list-style: none; }
         svg { vertical-align: middle; }
 
-        /* 2. COLLAPSIBLE SIDEBAR */
         .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
         .sidebar-left:hover { width: var(--sidebar-expanded-width); }
         .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
@@ -60,7 +59,6 @@
         .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
         .btn-logout:hover { background-color: var(--color-primary-hover); }
 
-        /* 3. MAIN LAYOUT FOR EXPLORE PAGE */
         .main-wrapper {
           margin-left: var(--sidebar-collapsed-width);
           padding: 2rem;
@@ -82,22 +80,19 @@
         .explore-main { display: flex; flex-direction: column; gap: 2.5rem; }
         .explore-sidebar-sticky { position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
-        /* 4. GENERIC & SECTION STYLES */
         h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
         .section-header { margin-bottom: 1.5rem; }
         .section-header h2 { font-size: 1.5rem; font-weight: 600; }
         .section-header p { color: var(--text-secondary); }
 
-        /* 5. SPECIFIC COMPONENT STYLES */
         
-        /* Happening Now Section */
         .events-scroller { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: none; }
         .events-scroller::-webkit-scrollbar { display: none; }
         .event-card {
             background-color: var(--color-card-background);
             border: 1px solid var(--color-border);
             border-radius: 16px;
-            flex: 0 0 300px; /* Prevent shrinking, set base width */
+            flex: 0 0 300px; 
             overflow: hidden;
             display: flex; flex-direction: column;
         }
@@ -107,13 +102,11 @@
         .event-meta { display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; }
         .live-badge { background-color: var(--color-danger); color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; }
 
-        /* Trending Section */
         .trending-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; }
         .trending-tag { background-color: var(--color-card-background); border: 1px solid var(--color-border); padding: 0.75rem 1.25rem; border-radius: 99px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
         .trending-tag:hover { background-color: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
         .trending-tag span { color: var(--text-secondary); margin-right: 0.5rem; }
 
-        /* Project Showcase */
         .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
         .project-card { background-color: var(--color-card-background); border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; }
         .project-card-image { height: 160px; background-size: cover; background-position: center; }
@@ -123,7 +116,6 @@
         .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .project-tag { background-color: var(--color-border); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; }
 
-        /* Right Sidebar Widgets */
         .widget-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 1.5rem; }
         .widget-card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
         .club-list li:not(:last-child) { border-bottom: 1px solid var(--color-border); }
@@ -136,8 +128,8 @@
         .btn-view:hover { background: var(--color-primary); color: var(--color-white); }
 
         .profile-link {
-            text-decoration: none; /* remove underline */
-            display: block; /* makes the whole div clickable */
+            text-decoration: none; 
+            display: block; 
         }
 
         .profile-toggle {
@@ -182,7 +174,6 @@
         transition: transform 0.3s ease;
         }
 
-        /* Zoom the image slightly on hover */
         .event-card:hover .event-image {
         transform: scale(1.1);
         }
@@ -333,13 +324,13 @@
                     </svg>
                     <span>Cupid</span>
                 </a></li>
-                <li><a href="message.html" class="nav-link">
+                <li><a href="messages.html" class="nav-link">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="alumani.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
-                    <span>Alumni</span>
+                    <span>Networking</span>
                 </a></li>
                 <li><a href="code-connect.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
@@ -527,7 +518,6 @@
                 return;
             }
             
-            // Update DOM with fetched data
             document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
             document.getElementById("s-title").textContent = profile.title || "";
             
