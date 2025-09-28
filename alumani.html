@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/@supabase/supabase-js"></script>
 
     <style>
-        /* 1. GLOBAL STYLES & SETUP */
         *, *::before, *::after {
           margin: 0;
           padding: 0;
@@ -44,7 +43,6 @@
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* 2. COLLAPSIBLE SIDEBAR STYLES (Consistent) */
         .sidebar-left {
           position: fixed; top: 0; left: 0; height: 100vh;
           background-color: var(--color-card-background);
@@ -70,7 +68,6 @@
         .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
         .btn-logout:hover { background-color: var(--color-primary-hover); }
 
-        /* 3. MAIN CONTENT WRAPPER */
         .main-content-wrapper {
           margin-left: var(--sidebar-collapsed-width);
           padding: 2rem;
@@ -82,7 +79,6 @@
         .alumni-feed { max-width: 1400px; margin: 0 auto; }
         .alumni-feed h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; }
 
-        /* 4. FILTER BAR */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -121,10 +117,9 @@
             border-color: var(--color-primary);
         }
 
-        /* 5. ALUMNI GRID & CARDS (MODIFIED FOR VERTICAL LIST VIEW) */
         .alumni-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Force a single column for a vertical list layout */
+            grid-template-columns: 1fr; 
             gap: 1rem;
         }
         .alumni-card {
@@ -135,7 +130,7 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            text-align: left; /* Changed from center */
+            text-align: left; 
             gap: 1.5rem;
         }
         .alumni-avatar {
@@ -148,7 +143,7 @@
             flex-shrink: 0;
         }
         .alumni-info {
-            flex-grow: 1; /* Allow info section to take up available space */
+            flex-grow: 1; 
         }
         .alumni-info h3 {
             font-size: 1.1rem;
@@ -173,7 +168,7 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-left: auto; /* Pushes actions to the far right */
+            margin-left: auto; 
             flex-shrink: 0;
         }
 
@@ -198,9 +193,9 @@
             background-color: var(--color-primary-hover);
         }
         .btn-message {
-            background-color: transparent;
+            background-color: var(--color-primary);
             border: 1px solid var(--color-border);
-            color: var(--text-secondary);
+            color: var(--color-white);
         }
         .btn-message:hover {
             background-color: var(--color-border);
@@ -218,7 +213,7 @@
             height: 20px;
         }
         .btn-social:hover {
-            background-color: #0077B5; /* LinkedIn brand color */
+            background-color: #0077B5; 
             color: var(--color-white);
         }
 
@@ -229,8 +224,8 @@
             grid-column: 1 / -1;
         }
         .profile-link {
-            text-decoration: none; /* remove underline */
-            display: block; /* makes the whole div clickable */
+            text-decoration: none; 
+            display: block; 
         }
 
         .profile-toggle {
@@ -300,42 +295,6 @@
         <main class="alumni-feed">
             <h1>Profiles Directory</h1>
 
-            <div class="filter-bar">
-                <div class="filter-group">
-                    <label for="name-search">Name</label>
-                    <input type="text" id="name-search" placeholder="e.g., Priya Sharma">
-                </div>
-                <div class="filter-group">
-                    <label for="year-select">Graduation Year</label>
-                    <select id="year-select">
-                        <option value="">All Years</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
-                        <option value="2020">2020</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="major-select">Major</label>
-                    <select id="major-select">
-                        <option value="">All Majors</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Electronics & Comms">Electronics & Comms</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Business Admin">Business Admin</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="company-search">Company</label>
-                    <input type="text" id="company-search" placeholder="e.g., Google">
-                </div>
-                 <div class="filter-group">
-                    <label for="location-search">Location</label>
-                    <input type="text" id="location-search" placeholder="e.g., Bengaluru">
-                </div>
-            </div>
-
             <div class="alumni-grid" id="alumni-grid">
                 </div>
         </main>
@@ -366,101 +325,81 @@
                     return;
                 }
                 
-                // Update DOM with fetched data
                 document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
                 document.getElementById("s-title").textContent = profile.title || "";
                 
                 document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
             }
             loadProfile();
-            
 
-            // --- MOCK ALUMNI DATA (EXPANDED) ---
-            const alumniData = [
-                { username: 'priya-sharma', name: 'Priya Sharma', gradYear: 2021, major: 'Computer Science', company: 'Google', title: 'Software Engineer II', location: 'Bengaluru', linkedinUrl: '#' },
-                { username: 'rohan-gupta', name: 'Rohan Gupta', gradYear: 2020, major: 'Electronics & Comms', company: 'Microsoft', title: 'Product Manager', location: 'Hyderabad', linkedinUrl: '#' },
-                { username: 'aisha-khan', name: 'Aisha Khan', gradYear: 2022, major: 'Business Admin', company: 'Deloitte', title: 'Business Analyst', location: 'Mumbai', linkedinUrl: '#' },
-                { username: 'vikram-singh', name: 'Vikram Singh', gradYear: 2021, major: 'Mechanical', company: 'Tata Motors', title: 'Design Engineer', location: 'Pune', linkedinUrl: '#' },
-                { username: 'sneha-reddy', name: 'Sneha Reddy', gradYear: 2023, major: 'Computer Science', company: 'Amazon', title: 'Data Engineer', location: 'Bengaluru', linkedinUrl: '#' },
-                { username: 'arjun-mehta', name: 'Arjun Mehta', gradYear: 2020, major: 'Computer Science', company: 'Google', title: 'Senior AI Researcher', location: 'San Francisco', linkedinUrl: '#' },
-                { username: 'neha-desai', name: 'Neha Desai', gradYear: 2024, major: 'Electronics & Comms', company: 'Intel', title: 'VLSI Design Intern', location: 'Bengaluru', linkedinUrl: '#' },
-                { username: 'karan-malhotra', name: 'Karan Malhotra', gradYear: 2022, major: 'Computer Science', company: 'Netflix', title: 'Full-Stack Developer', location: 'Remote', linkedinUrl: '#' },
-                { username: 'ananya-joshi', name: 'Ananya Joshi', gradYear: 2021, major: 'Business Admin', company: 'McKinsey & Company', title: 'Consultant', location: 'Gurugram', linkedinUrl: '#' },
-                { username: 'rahul-verma', name: 'Rahul Verma', gradYear: 2023, major: 'Mechanical', company: 'ISRO', title: 'Aerospace Engineer', location: 'Thiruvananthapuram', linkedinUrl: '#' },
-                { username: 'isha-singhania', name: 'Isha Singhania', gradYear: 2022, major: 'Electronics & Comms', company: 'Samsung R&D', title: 'Hardware Engineer', location: 'Bengaluru', linkedinUrl: '#' },
-                { username: 'aditya-nair', name: 'Aditya Nair', gradYear: 2020, major: 'Computer Science', company: 'Atlassian', title: 'Backend Engineer', location: 'Bengaluru', linkedinUrl: '#' },
-                { username: 'tanvi-patel', name: 'Tanvi Patel', gradYear: 2024, major: 'Computer Science', company: 'Salesforce', title: 'Software Engineering Intern', location: 'Hyderabad', linkedinUrl: '#' },
-                { username: 'mohit-agarwal', name: 'Mohit Agarwal', gradYear: 2021, major: 'Computer Science', company: 'Uber', title: 'Mobile Developer (iOS)', location: 'Remote', linkedinUrl: '#' },
-            ];
+            async function loadCoders() {
+            const { data: coders, error } = await supabase
+                .from("coders")
+                .select("id, name, title");
 
-            const alumniGrid = document.getElementById('alumni-grid');
-            const nameInput = document.getElementById('name-search');
-            const yearSelect = document.getElementById('year-select');
-            const majorSelect = document.getElementById('major-select');
-            const companyInput = document.getElementById('company-search');
-            const locationInput = document.getElementById('location-search');
+            if (error) {
+                console.error("Error loading coders:", error.message);
+                return;
+            }
 
-            // --- RENDER FUNCTION ---
-            const renderAlumni = (data) => {
-                alumniGrid.innerHTML = ''; // Clear existing cards
+            const grid = document.getElementById("alumni-grid");
+            grid.innerHTML = "";
 
-                if (data.length === 0) {
-                    alumniGrid.innerHTML = `<p id="no-results">No alumni found matching your criteria.</p>`;
-                    return;
-                }
+            coders.forEach(coder => {
+                const card = document.createElement("div");
+                card.className = "alumni-card";
 
-                data.forEach(alumnus => {
-                    const card = document.createElement('div');
-                    card.className = 'alumni-card';
-                    card.innerHTML = `
-                        <img src="https://picsum.photos/seed/${alumnus.name.replace(/\s/g, '')}/100" alt="${alumnus.name}" class="alumni-avatar">
-                        <div class="alumni-info">
-                            <h3>${alumnus.name}</h3>
-                            <p class="details">Class of ${alumnus.gradYear} &bull; ${alumnus.major}</p>
-                            <p class="job">${alumnus.title} @ ${alumnus.company}</p>
-                        </div>
-                        <div class="card-actions">
-                            <a href="messages.html?user=${alumnus.username}" class="btn-message">Message</a>
-                            <a href="profile.html?user=${alumnus.username}" class="btn-profile">Profile</a>
-                            <a href="${alumnus.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-social" title="View LinkedIn Profile">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                            </a>
-                        </div>
-                    `;
-                    alumniGrid.appendChild(card);
+                card.innerHTML = `
+                    <img src="https://picsum.photos/seed/${coder.name.split(' ').join('')}/80" alt="${coder.name}"" alt="${coder.name}" class="alumni-avatar">
+                    <div class="alumni-info">
+                        <h3>${coder.name}</h3>
+                        <p class="job">${coder.title || ""}</p>
+                    </div>
+                    <div class="card-actions">
+                        <a class="btn-message" data-id="${coder.id}">Message</a>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            document.querySelectorAll(".btn-message").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const receiverId = e.target.dataset.id;
+
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                        alert("Please log in to send messages.");
+                        return;
+                    }
+
+                    const { data: existingChats, error: existingError } = await supabase
+                        .from("chats")
+                        .select("id")
+                        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`)
+                        .limit(1);
+
+                    if (!existingChats || existingChats.length === 0) {
+                        const { error: insertError } = await supabase
+                            .from("chats")
+                            .insert([{
+                                sender_id: user.id,
+                                receiver_id: receiverId,
+                                message: "👋 Started a chat"
+                            }]);
+
+                        if (insertError) {
+                            console.error("Error creating chat:", insertError.message);
+                            return;
+                        }
+                    }
+
+                    window.location.href = `messages.html?user=${receiverId}`;
                 });
-            };
+            });
+        }
 
-            // --- FILTERING LOGIC ---
-            const filterAndRender = () => {
-                const nameQuery = nameInput.value.toLowerCase().trim();
-                const yearQuery = yearSelect.value;
-                const majorQuery = majorSelect.value;
-                const companyQuery = companyInput.value.toLowerCase().trim();
-                const locationQuery = locationInput.value.toLowerCase().trim();
-
-                const filteredData = alumniData.filter(alumnus => {
-                    const nameMatch = alumnus.name.toLowerCase().includes(nameQuery);
-                    const yearMatch = !yearQuery || alumnus.gradYear.toString() === yearQuery;
-                    const majorMatch = !majorQuery || alumnus.major === majorQuery;
-                    const companyMatch = alumnus.company.toLowerCase().includes(companyQuery);
-                    const locationMatch = alumnus.location.toLowerCase().includes(locationQuery);
-
-                    return nameMatch && yearMatch && majorMatch && companyMatch && locationMatch;
-                });
-
-                renderAlumni(filteredData);
-            };
-
-            // --- EVENT LISTENERS ---
-            nameInput.addEventListener('input', filterAndRender);
-            companyInput.addEventListener('input', filterAndRender);
-            locationInput.addEventListener('input', filterAndRender);
-            yearSelect.addEventListener('change', filterAndRender);
-            majorSelect.addEventListener('change', filterAndRender);
-
-            // --- INITIAL RENDER ---
-            renderAlumni(alumniData);
+        loadCoders();
 
         });
     </script>
