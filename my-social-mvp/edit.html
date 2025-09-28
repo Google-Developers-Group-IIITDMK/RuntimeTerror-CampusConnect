@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Your Profile - AlumniConnect</title>
+    <title>Edit Your Profile - CampusConnect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -144,9 +144,7 @@
     <aside id="sidebar" class="sidebar-left">
         <a href="profileN.html" class="profile-link">
             <div class="profile-toggle">
-
                 <img id="s-img" src="" alt="Profile pic" class="profile-avatar-main">
-
                 <div class="profile-info">
                 <h3 id="s-name" class="profile-name"></h3>
                 <p id="s-title" class="profile-title"></p>
@@ -156,7 +154,7 @@
         <div class="sidebar-content">
             <nav class="sidebar-nav">
               <ul>
-                <li><a href="feed.html" class="nav-link">
+                <li><a href="feedN.html" class="nav-link">
                     <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
                     </svg>
@@ -174,13 +172,13 @@
                     </svg>
                     <span>Cupid</span>
                 </a></li>
-                <li><a href="message.html" class="nav-link">
+                <li><a href="messages.html" class="nav-link">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="alumani.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
-                    <span>Alumni</span>
+                    <span>Networking</span>
                 </a></li>
                 <li><a href="code-connect.html" class="nav-link active">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
@@ -318,7 +316,7 @@
     
     <div id="toast-notification"></div>
 
-    <script>
+<script>
   const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co";
   const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
   const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -334,7 +332,6 @@
     }
     userId = user.id;
 
-    // Fetch from profiles
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
@@ -359,7 +356,6 @@
       }
     }
 
-    // Fetch from coders
     const { data: coder, error: coderError } = await supabase
       .from("coders")
       .select("*")
@@ -379,7 +375,6 @@
     e.preventDefault();
     if (!userId) return;
 
-    // Gather values
     const profileData = {
       id: userId,
       username: document.getElementById("username").value,
@@ -395,13 +390,11 @@
       id: userId,
       name: document.getElementById("full-name").value,
       title: document.getElementById("title").value,
-
       github: document.getElementById("github-url").value,
       linkedin: document.getElementById("linkedin-url").value,
       leetcode: document.getElementById("leetcode-url").value,
       codeforces: document.getElementById("codeforces-url").value,
       twitter: document.getElementById("codechef-url").value,
-
       score: 0 
     };
 
@@ -414,7 +407,6 @@
       return;
     }
 
-    // Save coders
     const { error: coderError } = await supabase
       .from("coders")
       .upsert(coderData, { onConflict: "id" });
