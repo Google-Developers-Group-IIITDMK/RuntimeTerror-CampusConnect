@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>ConnectU - Feed</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<style>
+    /* 1. GLOBAL STYLES & SETUP */
+    :root {
+        --color-background: #100E19;
+        --color-primary: #8A4FFF;
+        --color-primary-hover: #7B46E5;
+        --color-card-background: #1C1A27;
+        --color-border: #2A2836;
+        --text-primary: #EAEAEB;
+        --text-secondary: #9A9A9E;
+        --color-white: #FFFFFF;
+        --sidebar-collapsed-width: 90px;
+        --sidebar-expanded-width: 280px;
+    }
+
+    *, *::before, *::after {
+        margin: 0;
+        padding: 2px;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-primary);
+        background-color: var(--color-background);
+        background-image:
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    svg { vertical-align: middle; }
+
+    /* 2. COLLAPSIBLE SIDEBAR STYLES */
+    .sidebar-left {
+        position: fixed; top: 0; left: 0; height: 100vh;
+        background-color: var(--color-card-background);
+        padding: 1.5rem; display: flex; flex-direction: column;
+        z-index: 100; overflow: hidden;
+        width: var(--sidebar-collapsed-width);
+        transition: width 0.3s ease-in-out;
+        border-right: 1px solid var(--color-border);
+    }
+    .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+    .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+    .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+    .sidebar-left:hover .profile-info { opacity: 1; }
+    .profile-avatar-main { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; flex-shrink: 0; padding: initial}
+    .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+    .sidebar-left:hover .sidebar-content { opacity: 1; }
+    .sidebar-nav { flex-grow: 1; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+    /* .nav-link.active { background-color: var(--color-primary); color: var(--color-white); } */
+    .nav-link:hover { background-color: var(--color-border); }
+    /* .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); } */
+    .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
+    .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+    .btn-logout:hover { background-color: var(--color-primary-hover); }
+
+    /* 3. MAIN LAYOUT WRAPPER */
+    .main-wrapper {
+        margin-left: var(--sidebar-collapsed-width);
+        transition: margin-left 0.3s ease-in-out;
+    }
+    .sidebar-left:hover ~ .main-wrapper {
+        margin-left: var(--sidebar-expanded-width);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .profile-link {
+        text-decoration: none; /* remove underline */
+        display: block; /* makes the whole div clickable */
+    }
+
+    .profile-toggle {
+        padding: 8px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .profile-toggle:hover {
+        background-color: #646464; 
+        cursor: pointer;
+    }
+</style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            "display": ["Poppins", "sans-serif"]
+          },
+        },
+      },
+    }
+</script>
+</head>
+<body class="dark">
+
+<aside id="sidebar" class="sidebar-left">
+    <a href="profileN.html" class="profile-link">
+        <div class="profile-toggle">
+            <img id="s-img" src="" alt="Profile pic" class="profile-avatar-main">
+            <div class="profile-info">
+            <h3 id="s-name" class="profile-name"></h3>
+            <p id = "s-title" class="profile-title"></p>
+            </div>
+        </div>
+    </a>
+    <div class="sidebar-content">
+        <nav class="sidebar-nav">
+          <ul>
+            <li><a href="feed.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                    </svg>
+                    <span>Feed</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="cupid.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128,216a8,8,0,0,1-5.66-2.34C58.34,159.4,24,129.74,24,96A64,64,0,0,1,128,32a64,64,0,0,1,104,64c0,33.74-34.34,63.4-98.34,117.66A8,8,0,0,1,128,216Z"></path>
+                    </svg>
+                    <span>Cupid</span>
+                </a></li>
+                <li><a href="message.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="#" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Alumni</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+          </ul>
+        </nav>
+        <a href="loginN.html" class="btn-logout">Logout</a>
+    </div>
+</aside>
+
+<div class="main-wrapper">
+    <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <main class="lg:col-span-8 xl:col-span-8 h-screen overflow-y-auto no-scrollbar">
+            <header class="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-[var(--color-border)] bg-[var(--color-background)]/80 backdrop-blur-sm px-4 py-4 ">
+              <div class="flex items-center gap-3 text-white">
+                <h2 class="text-xl font-bold">Campus Feed</h2>
+              </div>
+            </header>
+      
+            <div class="p-8 space-y-6 -mx-8">
+              <div class="flex gap-4 p-4 backdrop-blur-sm bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4">
+                <img src="https://picsum.photos/seed/alexchen/100" class="w-12 h-12 rounded-full shrink-0" />
+                <div class="flex-1">
+                  <textarea id="post-input" class="w-full resize-none bg-transparent focus:outline-none placeholder-gray-400 text-lg" placeholder="What's on your mind?"></textarea>
+                  <div class="flex justify-between items-center mt-2">
+                    <button class="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
+                      <span>Attach</span>
+                    </button>
+                    <button class="bg-[var(--color-primary)] text-white font-bold py-2 px-6 rounded-full hover:bg-[var(--color-primary-hover)] transition-opacity" id="post-btn">Post</button>
+                  </div>
+                </div>
+              </div>
+      
+               <div id="posts" class="space-y-6">
+                </div>
+            </div>
+        </main>
+
+        <aside class="hidden lg:block lg:col-span-4 xl:col-span-4 h-screen overflow-y-auto no-scrollbar">
+            <div class="sticky top-0 py-8">
+                <div class="space-y-8">
+                    <div class="bg-[var(--color-card-background)] p-4 rounded-xl border border-[var(--color-border)]">
+                        <h2 class="text-xl font-bold text-white mb-4 px-2">Stories</h2>
+                        <div class="flex gap-5 overflow-x-auto no-scrollbar pb-3">
+                          <div class="flex flex-col items-center gap-2 w-20 text-center shrink-0">
+                            <div class="size-16 rounded-full bg-center bg-no-repeat bg-cover ring-2 ring-offset-2 ring-offset-[var(--color-background)] ring-[var(--color-primary)]" style='background-image: url("assets/WhatsApp\ Image\ 2025-09-23\ at\ 22.30.04_4e656b44.jpg");'></div>
+                            <p class="text-sm text-gray-300 truncate">Paarth</p>
+                          </div>
+                          <div class="flex flex-col items-center gap-2 w-20 text-center shrink-0">
+                            <div class="size-16 rounded-full bg-center bg-no-repeat bg-cover ring-2 ring-offset-2 ring-offset-[var(--color-background)] ring-[var(--color-primary)]" style='background-image: url("assets/WhatsApp\ Image\ 2025-09-22\ at\ 01.59.27_7d81959f.jpg");'></div>
+                            <p class="text-sm text-gray-300 truncate">Divyansh</p>
+                          </div>
+                          <div class="flex flex-col items-center gap-2 w-20 text-center shrink-0">
+                            <div class="size-16 rounded-full bg-center bg-no-repeat bg-cover ring-2 ring-offset-2 ring-offset-[var(--color-background)] ring-[var(--color-primary)]" style='background-image: url("assets/1683377320934.jpeg");'></div>
+                            <p class="text-sm text-gray-300 truncate">Arpit</p>
+                          </div>
+                          <div class="flex flex-col items-center gap-2 w-20 text-center shrink-0">
+                            <div class="size-16 rounded-full bg-center bg-no-repeat bg-cover ring-2 ring-offset-2 ring-offset-[var(--color-background)] ring-[var(--color-primary)]" style='background-image: url("assets/WhatsApp\ Image\ 2025-09-19\ at\ 22.25.03_c038e2e8.jpg");'></div>
+                            <p class="text-sm text-gray-300 truncate">College Diaries</p>
+                          </div>
+                        </div>
+                    </div>
+              
+                    <div class="bg-[var(--color-card-background)] p-4 rounded-xl border border-[var(--color-border)]">
+                        <h2 class="text-xl font-bold text-white mb-4">Community</h2>
+                        <div class="space-y-4">
+                          <div class="flex items-center gap-4">
+                            <img src="assets/gdg.png" class="w-14 h-14 rounded-full" />
+                            <div class="flex-1">
+                              <p class="font-bold text-white">GDG</p>
+                              <p class="text-sm text-gray-400">The offical page of GDG club</p>
+                            </div>
+                            <button class="text-[var(--color-primary)] font-bold text-sm">Follow</button>
+                          </div>
+                          <div class="flex items-center gap-4">
+                            <img src="assets/cp.png" class="w-14 h-14 rounded-full" />
+                            <div class="flex-1">
+                              <p class="font-bold text-white">Competitive Programming</p>
+                              <p class="text-sm text-gray-400">Code. Debug. Repeat</p>
+                            </div>
+                            <button class="text-[var(--color-primary)] font-bold text-sm">Follow</button>
+                          </div>
+                          <div class="flex items-center gap-4">
+                            <img src="assets/sports.png" class="w-14 h-14 rounded-full" />
+                            <div class="flex-1">
+                              <p class="font-bold text-white">Sports</p>
+                              <p class="text-sm text-gray-400">Passion meets opportunities</p>
+                            </div>
+                            <button class="text-[var(--color-primary)] font-bold text-sm">Follow</button>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function loadPosts() {
+        const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+        if (error) {
+        console.error("Error fetching posts:", error);
+        return;
+        }
+
+        const postsContainer = document.getElementById("posts");
+        postsContainer.innerHTML = ""; 
+
+        data.forEach(post => {
+        const postElement = document.createElement("div");
+        postElement.className = "backdrop-blur-md bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4";
+
+        postElement.innerHTML = `<div class="p-6">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("https://ui-avatars.com/api/?name=${post.username}&background=random");'></div>
+                    <div>
+                      <p class="font-bold text-white">${post.username}</p>
+                      <p class="text-sm text-gray-400">${new Date(post.created_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+                <p class="mt-4 text-text-color">${post.content}</p>
+                ${post.image_url ? `<img src="${post.image_url}" class="rounded-lg mt-4 max-h-60 w-full object-cover"/>` : ""}
+              </div>
+              <div class="flex items-center gap-4 p-4 border-t border-gray-700/50">
+                <button class="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+                  ❤️ <span>Like</span>
+                </button>
+                <button class="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+                  💬 <span>Comment</span>
+                </button>
+              </div>
+            `;
+
+        postsContainer.appendChild(postElement);
+        });
+    }
+
+    loadPosts();
+
+  const postButton = document.querySelector('#post-btn'); 
+  const feedContainer = document.querySelector('#posts'); 
+  const textarea = document.querySelector('textarea');
+
+  postButton.addEventListener('click', async() => {
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const { data, error } = await supabase
+        .from('posts')
+        .insert([{ username: "You", content: text }]) 
+        .select(); 
+
+    if (error) {
+        console.error("Error adding post:", error);
+        return;
+    }
+
+    const postCard = document.createElement('div');
+    postCard.className = 'backdrop-blur-md bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4';
+    postCard.innerHTML = `
+          <div class="p-6">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-4">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("https://ui-avatars.com/api/?name=You&background=random");'></div>
+                <div>
+                  <p class="font-bold text-white">You</p>
+                  <p class="text-sm text-gray-400">Just now</p>
+                </div>
+              </div>
+            </div>
+            <p class="mt-4 text-text-color">${text}</p>
+          </div>
+          <div class="flex items-center gap-4 p-4 border-t border-gray-700/50">
+            <button class="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+              ❤️ <span>Like</span>
+            </button>
+            <button class="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
+              💬 <span>Comment</span>
+            </button>
+          </div>
+        `;
+
+    feedContainer.prepend(postCard);
+    textarea.value = '';
+  });
+</script> 
+
+
+</body>
+</html>
