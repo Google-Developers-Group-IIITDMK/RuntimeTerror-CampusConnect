@@ -7,7 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+
     <style>
         /* 1. GLOBAL STYLES & SETUP */
         *, *::before, *::after {
@@ -57,7 +58,7 @@
         .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
         .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
         .sidebar-left:hover .profile-info { opacity: 1; }
-        .profile-avatar-main { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .profile-avatar-main { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; flex-shrink: 0; padding: initial;}
         .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
         .sidebar-left:hover .sidebar-content { opacity: 1; }
         .sidebar-nav { flex-grow: 1; }
@@ -227,58 +228,77 @@
             padding: 3rem;
             grid-column: 1 / -1;
         }
+        .profile-link {
+            text-decoration: none; /* remove underline */
+            display: block; /* makes the whole div clickable */
+        }
+
+        .profile-toggle {
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-toggle:hover {
+            background-color: #646464; 
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <aside id="sidebar" class="sidebar-left">
-        <div class="profile-toggle">
-            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
-            <div class="profile-info">
-              <h3 class="profile-name">Alex Chen</h3>
-              <p class="profile-title">Senior, Computer Science</p>
+        <a href="profileN.html" class="profile-link">
+            <div class="profile-toggle">
+                <img id="s-img" src="" alt="Profile pic" class="profile-avatar-main">
+                <div class="profile-info">
+                <h3 id="s-name" class="profile-name"></h3>
+                <p id = "s-title" class="profile-title"></p>
+                </div>
             </div>
-        </div>
+        </a>
         
         <div class="sidebar-content">
             <nav class="sidebar-nav">
               <ul>
-                <li><a href="home.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
-                    <span>Home</span>
+                <li><a href="feedN.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                    </svg>
+                    <span>Feed</span>
                 </a></li>
                 <li><a href="explore.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
                     <span>Explore</span>
                 </a></li>
-                <li><a href="network.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
-                    <span>Network</span>
+                <li><a href="cupid.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128,216a8,8,0,0,1-5.66-2.34C58.34,159.4,24,129.74,24,96A64,64,0,0,1,128,32a64,64,0,0,1,104,64c0,33.74-34.34,63.4-98.34,117.66A8,8,0,0,1,128,216Z"></path>
+                    </svg>
+                    <span>Cupid</span>
                 </a></li>
-                <li><a href="message.html" class="nav-link">
+                <li><a href="messages.html" class="nav-link">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="alumni.html" class="nav-link active">
+                <li><a href="alumani.html" class="nav-link active">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
-                    <span>Alumni</span>
+                    <span>Networking</span>
                 </a></li>
-                <li><a href="code-connect.html" class="nav-link">
+                <li><a href="code-connect.html" class="nav-link ">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
                     <span>Code & Connect</span>
                 </a></li>
-                <li><a href="profile.html" class="nav-link">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
-                  <span>Profile</span>
-                </a></li>
               </ul>
             </nav>
-            <a href="#" class="btn-logout">Logout</a>
+            <a href="loginN.html" class="btn-logout">Logout</a>
         </div>
     </aside>
 
     <div class="main-content-wrapper">
         <main class="alumni-feed">
-            <h1>Alumni Directory</h1>
+            <h1>Profiles Directory</h1>
 
             <div class="filter-bar">
                 <div class="filter-group">
@@ -323,6 +343,37 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co"; 
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA"; // replace with your anon key
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+            async function loadProfile() {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    console.error("No logged in user");
+                    return;
+                }
+
+                const { data: profile, error } = await supabase
+                    .from("profiles")
+                    .select("full_name, avatar_url, title")
+                    .eq("id", user.id) 
+                    .single();
+
+                if (error) {
+                    console.error("Error loading profile:", error.message);
+                    return;
+                }
+                
+                // Update DOM with fetched data
+                document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
+                document.getElementById("s-title").textContent = profile.title || "";
+                
+                document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
+            }
+            loadProfile();
+            
 
             // --- MOCK ALUMNI DATA (EXPANDED) ---
             const alumniData = [
@@ -369,7 +420,7 @@
                             <p class="job">${alumnus.title} @ ${alumnus.company}</p>
                         </div>
                         <div class="card-actions">
-                            <a href="message.html?user=${alumnus.username}" class="btn-message">Message</a>
+                            <a href="messages.html?user=${alumnus.username}" class="btn-message">Message</a>
                             <a href="profile.html?user=${alumnus.username}" class="btn-profile">Profile</a>
                             <a href="${alumnus.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="btn-social" title="View LinkedIn Profile">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
