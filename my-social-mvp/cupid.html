@@ -1,59 +1,48 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<title>Cupid's Arrow</title>
-<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
-<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Plus+Jakarta+Sans:wght@400;500;700;800" onload="this.rel='stylesheet'" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<style type="text/tailwindcss">
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Cupid's Arrow</title>
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+  <link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Plus+Jakarta+Sans:wght@400;500;700;800" onload="this.rel='stylesheet'" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style type="text/tailwindcss">
     @keyframes fill-bar {
-      from {
-        width: 0%;
-      }
-      to {
-        width: 75%;
-      }
+      from { width: 0%; }
+      to { width: 75%; }
     }
+
     @keyframes pop-in {
-      0% {
-        transform: scale(0);
-        opacity: 0;
-      }
-      50% {
-        transform: scale(1.2);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1);
-      }
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
     }
-    .animate-fill-bar {
-      animation: fill-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-    .animate-pop-in {
-      animation: pop-in 0.5s ease-out both;
-    }
+
+    .animate-fill-bar { animation: fill-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    .animate-pop-in { animation: pop-in 0.5s ease-out both; }
     .heart-1 { animation-delay: 1s; }
     .heart-2 { animation-delay: 1.2s; }
     .heart-3 { animation-delay: 1.4s; }
     .heart-4 { animation-delay: 1.6s; }
     .heart-5 { animation-delay: 1.8s; }
+
     @keyframes confetti-fall {
-        0% { transform: translateY(-100vh) rotate(0deg); }
-        100% { transform: translateY(100vh) rotate(720deg); }
+      0% { transform: translateY(-100vh) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(720deg); }
     }
+
     .confetti {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background-color: var(--confetti-color);
-        animation: confetti-fall 5s linear infinite;
-        border-radius: 50%;
-        opacity: 0.8;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--confetti-color);
+      animation: confetti-fall 5s linear infinite;
+      border-radius: 50%;
+      opacity: 0.8;
     }
   </style>
-<script>
+  <script>
     tailwind.config = {
       darkMode: "class",
       theme: {
@@ -78,102 +67,107 @@
   </script>
 </head>
 <body class="bg-gradient-to-br from-pink-100 to-rose-200 dark:from-pink-900/20 dark:to-background-dark font-display text-zinc-900 dark:text-zinc-100">
-<div class="flex flex-col min-h-screen">
-<header class="flex items-center justify-between px-6 sm:px-10 py-4 border-b border-zinc-200/50 dark:border-zinc-800/50 sticky top-0 bg-white/30 dark:bg-background-dark/30 backdrop-blur-lg z-10">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 text-primary">
-<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-</svg>
-</div>
-<h1 class="text-xl font-bold text-zinc-900 dark:text-white">Cupid's Arrow</h1>
-</div>
-<div class="flex items-center gap-4">
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Home</a>
-<a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">My Profile</a>
-<a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Settings</a>
-</nav>
-<button class="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-white/80 dark:hover:bg-zinc-700/80 transition-colors backdrop-blur-sm">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-1 right-1 block w-2 h-2 rounded-full bg-primary"></span>
-</button>
-<div class="w-10 h-10 rounded-full bg-cover bg-center" style='background-image: url("assets/sankalp.png");'></div>
-</div>
-</header>
-<main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-<div class="w-full max-w-2xl space-y-12">
-<div class="text-center">
-<h2 class="text-4xl font-extrabold text-zinc-900 dark:text-white sm:text-5xl">Welcome, Sankalp!</h2>
-<p class="mt-4 text-lg text-zinc-500 dark:text-zinc-400">Your journey to finding love starts here.</p>
-</div>
-<div class="bg-white/60 dark:bg-zinc-900/50 p-8 rounded-xl shadow-lg space-y-8 backdrop-blur-md border border-white/30 dark:border-zinc-800/50">
-<div class="space-y-4">
-<h3 class="text-2xl font-bold text-center text-primary">Got a Crush?</h3>
-<div class="flex flex-col sm:flex-row items-end gap-4">
-<div class="w-full">
-<label class="sr-only" for="crush-name">Enter your crush's name</label>
-<input class="form-input w-full px-4 py-3 rounded-md bg-white/80 dark:bg-background-dark/80 border-zinc-300 dark:border-zinc-700 focus:ring-primary focus:border-primary text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 backdrop-blur-sm" id="crush-name" placeholder="Enter your crush's name..." type="text"/>
-</div>
-<button id="submit-crush" class="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
-  <span class="material-symbols-outlined">send</span>
-  <span>Submit</span>
-</button>
-</div>
-</div>
-<div class="space-y-6">
-<h3 class="text-2xl font-bold text-center text-primary">Cupid Meter</h3>
-<div class="space-y-3">
-<div class="flex justify-between items-center relative">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-1">favorite</span>
-<span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-2">favorite</span>
-<span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-3">favorite</span>
-<span class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-3xl animate-pop-in heart-4">favorite_border</span>
-<span class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-3xl animate-pop-in heart-5">favorite_border</span>
-</div>
-<p class="text-2xl font-bold text-primary animate-pop-in heart-1">75%</p>
-</div>
-<div class="w-full bg-zinc-200/70 dark:bg-zinc-700/70 rounded-full h-4 relative overflow-hidden">
-<div class="bg-gradient-to-r from-rose-400 to-primary h-4 rounded-full animate-fill-bar"></div>
-</div>
-<p class="text-center text-sm text-zinc-500 dark:text-zinc-400">You have a high chance of a match! Keep submitting!</p>
-</div>
-</div>
-<div class="space-y-6">
-<h3 class="text-2xl font-bold text-center text-primary">Notifications</h3>
-<div class="space-y-4">
-<a class="flex items-center gap-4 p-4 rounded-lg bg-white/70 dark:bg-background-dark/70 hover:bg-white/90 dark:hover:bg-zinc-800/90 transition-colors backdrop-blur-sm" href="messagesCupid.html">
-<div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-2xl">favorite</span>
-</div>
-<div class="flex-grow">
-<p class="font-semibold text-zinc-800 dark:text-zinc-200">Your Matches</p>
-<p class="text-sm text-zinc-500 dark:text-zinc-400">You have a new match! Time to reveal yourselves.</p>
-</div>
-<span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500">chevron_right</span>
-</a>
-<a class="flex items-center gap-4 p-4 rounded-lg bg-white/70 dark:bg-background-dark/70 hover:bg-white/90 dark:hover:bg-zinc-800/90 transition-colors backdrop-blur-sm" href="#">
-<div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-2xl">visibility</span>
-</div>
-<div class="flex-grow">
-<p class="font-semibold text-zinc-800 dark:text-zinc-200">Secret Admirer</p>
-<p class="text-sm text-zinc-500 dark:text-zinc-400">Someone has a crush on you! Will it be mutual?</p>
-</div>
-<span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500">chevron_right</span>
-</a>
-</div>
-</div>
-</div>
-<div class="text-center">
-<p class="text-sm text-zinc-500 dark:text-zinc-400">
+  <div class="flex flex-col min-h-screen">
+    <header class="flex items-center justify-between px-6 sm:px-10 py-4 border-b border-zinc-200/50 dark:border-zinc-800/50 sticky top-0 bg-white/30 dark:bg-background-dark/30 backdrop-blur-lg z-10">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 text-primary">
+          <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold text-zinc-900 dark:text-white">Cupid's Arrow</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <nav class="hidden md:flex items-center gap-6">
+          <a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="feedN.html">Home</a>
+          <a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="profileN.html">My Profile</a>
+          <a class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Settings</a>
+        </nav>
+        <button class="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-white/80 dark:hover:bg-zinc-700/80 transition-colors backdrop-blur-sm">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="absolute top-1 right-1 block w-2 h-2 rounded-full bg-primary"></span>
+        </button>
+        <div class="w-10 h-10 rounded-full bg-cover bg-center" style='background-image: url("assets/sankalp.png");'></div>
+      </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div class="w-full max-w-2xl space-y-12">
+        <div class="text-center">
+          <h2 class="text-4xl font-extrabold text-zinc-900 dark:text-white sm:text-5xl">Welcome, Sankalp!</h2>
+          <p class="mt-4 text-lg text-zinc-500 dark:text-zinc-400">Your journey to finding love starts here.</p>
+        </div>
+
+        <div class="bg-white/60 dark:bg-zinc-900/50 p-8 rounded-xl shadow-lg space-y-8 backdrop-blur-md border border-white/30 dark:border-zinc-800/50">
+          <div class="space-y-4">
+            <h3 class="text-2xl font-bold text-center text-primary">Got a Crush?</h3>
+            <div class="flex flex-col sm:flex-row items-end gap-4">
+              <div class="w-full">
+                <label class="sr-only" for="crush-name">Enter your crush's name</label>
+                <input class="form-input w-full px-4 py-3 rounded-md bg-white/80 dark:bg-background-dark/80 border-zinc-300 dark:border-zinc-700 focus:ring-primary focus:border-primary text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 backdrop-blur-sm" id="crush-name" placeholder="Enter your crush's name..." type="text"/>
+              </div>
+              <button id="submit-crush" class="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-primary text-white font-bold hover:bg-opacity-90 transition-colors shadow-md">
+                <span class="material-symbols-outlined">send</span>
+                <span>Submit</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-center text-primary">Cupid Meter</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center relative">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-1">favorite</span>
+                  <span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-2">favorite</span>
+                  <span class="material-symbols-outlined text-primary text-3xl animate-pop-in heart-3">favorite</span>
+                  <span class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-3xl animate-pop-in heart-4">favorite_border</span>
+                  <span class="material-symbols-outlined text-zinc-300 dark:text-zinc-600 text-3xl animate-pop-in heart-5">favorite_border</span>
+                </div>
+                <p class="text-2xl font-bold text-primary animate-pop-in heart-1">75%</p>
+              </div>
+              <div class="w-full bg-zinc-200/70 dark:bg-zinc-700/70 rounded-full h-4 relative overflow-hidden">
+                <div class="bg-gradient-to-r from-rose-400 to-primary h-4 rounded-full animate-fill-bar"></div>
+              </div>
+              <p class="text-center text-sm text-zinc-500 dark:text-zinc-400">You have a high chance of a match! Keep submitting!</p>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <h3 class="text-2xl font-bold text-center text-primary">Notifications</h3>
+            <div class="space-y-4">
+              <a class="flex items-center gap-4 p-4 rounded-lg bg-white/70 dark:bg-background-dark/70 hover:bg-white/90 dark:hover:bg-zinc-800/90 transition-colors backdrop-blur-sm" href="messagesCupid.html">
+                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <span class="material-symbols-outlined text-2xl">favorite</span>
+                </div>
+                <div class="flex-grow">
+                  <p class="font-semibold text-zinc-800 dark:text-zinc-200">Your Matches</p>
+                  <p class="text-sm text-zinc-500 dark:text-zinc-400">Click here to make your heart skip a beat 💖 your matches are ready to chat!</p>
+                </div>
+                <span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500">chevron_right</span>
+              </a>
+
+              <a class="flex items-center gap-4 p-4 rounded-lg bg-white/70 dark:bg-background-dark/70 hover:bg-white/90 dark:hover:bg-zinc-800/90 transition-colors backdrop-blur-sm" href="blindCrush.html">
+                <div class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <span class="material-symbols-outlined text-2xl">visibility</span>
+                </div>
+                <div class="flex-grow">
+                  <p class="font-semibold text-zinc-800 dark:text-zinc-200">Blind Crush Board</p>
+                  <p class="text-sm text-zinc-500 dark:text-zinc-400">Share your secret admirations and let the mystery spark! Who knows, your crush might just notice you 😉</p>
+                </div>
+                <span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500">chevron_right</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <p class="text-sm text-zinc-500 dark:text-zinc-400">
             Ready for more? Explore the <a class="font-semibold text-primary hover:underline" href="blindCrush.html">Blind Crush Board</a> and <a class="font-semibold text-primary hover:underline" href="secret.html">Secret Messages</a> once you have a match!
           </p>
-</div>
-</div>
-</main>
-</div>
+        </div>
+      </div>
+    </main>
+  </div>
 <!-- 
 <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="relative w-full max-w-md bg-white/80 dark:bg-zinc-900/80 rounded-xl shadow-2xl p-8 text-center backdrop-blur-lg border border-white/20 dark:border-zinc-800/50 animate-pop-in">
