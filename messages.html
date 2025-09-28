@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages - AlumniConnect</title>
+    <title>Messages - CampusConnect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+
     <style>
-        /* 1. GLOBAL STYLES & SETUP */
         *, *::before, *::after {
           margin: 0;
           padding: 0;
@@ -38,13 +38,12 @@
           background-image: 
             radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
             radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
-          overflow: hidden; /* Prevents the main page from scrolling */
+          overflow: hidden; 
         }
 
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* 2. COLLAPSIBLE SIDEBAR STYLES */
         .sidebar-left {
           position: fixed; 
           top: 0; 
@@ -79,11 +78,12 @@
           opacity: 1; 
         }
         .profile-avatar-main { 
-          width: 60px; 
-          height: 60px; 
+          width: 50px; 
+          height: 50px; 
           border-radius: 12px; 
           object-fit: cover; 
           flex-shrink: 0; 
+          padding: initial;
         }
         .sidebar-content { 
           margin-top: 2rem; 
@@ -135,7 +135,6 @@
           background-color: var(--color-primary-hover); 
         }
 
-        /* 3. MESSAGING INTERFACE LAYOUT */
         .messaging-wrapper {
           margin-left: var(--sidebar-collapsed-width);
           display: grid;
@@ -147,7 +146,6 @@
           margin-left: var(--sidebar-expanded-width);
         }
 
-        /* 4. CONVERSATIONS PANEL (LEFT) */
         .conversations-panel {
           display: flex; 
           flex-direction: column; 
@@ -240,7 +238,6 @@
           text-overflow: ellipsis; 
         }
 
-        /* 5. CHAT PANEL (MIDDLE) */
         .chat-panel { 
           display: flex; 
           flex-direction: column; 
@@ -360,7 +357,6 @@
           background: var(--color-primary-hover); 
         }
 
-        /* 6. DETAILS PANEL (RIGHT) */
         .details-panel { 
           border-left: 1px solid var(--color-border); 
           padding: 2rem; 
@@ -395,52 +391,71 @@
         .details-link:hover { 
           text-decoration: underline; 
         }
+        .profile-link {
+            text-decoration: none; 
+            display: block; 
+        }
+
+        .profile-toggle {
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-toggle:hover {
+            background-color: #646464; 
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <aside id="sidebar" class="sidebar-left">
-        <div class="profile-toggle">
-            <img src="https://picsum.photos/seed/alexchen/100" alt="Alex Chen's profile" class="profile-avatar-main">
-            <div class="profile-info">
-              <h3 class="profile-name">Alex Chen</h3>
-              <p class="profile-title">Senior, Computer Science</p>
+        <a href="profileN.html" class="profile-link">
+            <div class="profile-toggle">
+                <img id="s-img" src="" alt="Profile pic" class="profile-avatar-main">
+                <div class="profile-info">
+                <h3 id="s-name" class="profile-name"></h3>
+                <p id = "s-title" class="profile-title"></p>
+                </div>
             </div>
-        </div>
+        </a>
         
         <div class="sidebar-content">
             <nav class="sidebar-nav">
               <ul>
-                <li><a href="home.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/></svg>
-                    <span>Home</span>
+                <li><a href="feedN.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                    </svg>
+                    <span>Feed</span>
                 </a></li>
                 <li><a href="explore.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z"/></g></svg>
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
                     <span>Explore</span>
                 </a></li>
-                <li><a href="network.html" class="nav-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></svg>
-                    <span>Network</span>
+                <li><a href="cupid.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128,216a8,8,0,0,1-5.66-2.34C58.34,159.4,24,129.74,24,96A64,64,0,0,1,128,32a64,64,0,0,1,104,64c0,33.74-34.34,63.4-98.34,117.66A8,8,0,0,1,128,216Z"></path>
+                    </svg>
+                    <span>Cupid</span>
                 </a></li>
-                <li><a href="message.html" class="nav-link active">
+                <li><a href="messages.html" class="nav-link active">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="alumani.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
                     <span>Alumni</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="code-connect.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
                     <span>Code & Connect</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></g></svg>
-                  <span>Profile</span>
-                </a></li>
               </ul>
             </nav>
-            <a href="#" class="btn-logout">Logout</a>
+            <a href="loginN.html" class="btn-logout">Logout</a>
         </div>
     </aside>
 
@@ -466,191 +481,247 @@
              </aside>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const conversationsList = document.getElementById('conversations-list');
-            const chatPanel = document.getElementById('chat-panel');
-            const detailsPanel = document.getElementById('details-panel');
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co"; 
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA"; 
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-            // --- MOCK DATA ---
-            // In a real app, this would come from a database.
-            const users = {
-                'jessica-lee': { name: 'Jessica Lee', title: 'Product Manager @ TechCorp', online: true },
-                'mark-davis': { name: 'Mark Davis', title: 'Senior Software Engineer', online: false },
-                'emily-carter': { name: 'Emily Carter', title: 'Data Scientist | AI/ML', online: true }
-            };
+        let currentUser = null;
+        const users = {};
+        const conversations = {};
 
-            const conversations = {
-                'jessica-lee': {
-                    last_updated: '5m',
-                    messages: [
-                        { sender: 'them', text: 'Hey Alex! Great to connect. I saw your post on the new campus project.' },
-                        { sender: 'me', text: 'Thanks, Jessica! Glad you liked it. How is everything at TechCorp?' },
-                        { sender: 'them', text: 'Busy as always, but rewarding. We should catch up for coffee sometime.' }
-                    ]
-                },
-                'mark-davis': {
-                    last_updated: '2h',
-                    messages: [
-                        { sender: 'them', text: 'Do you have the notes from the alumni tech talk last week?' },
-                        { sender: 'me', text: 'Yes, I do. I\'ll send them over to your email.' }
-                    ]
-                },
-                'emily-carter': {
-                    last_updated: '1d',
-                    messages: [
-                        { sender: 'them', text: 'I have a question about the ML model you mentioned in your profile. Do you have a minute?' }
-                    ]
-                }
-            };
+        async function loadProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                console.error("No logged in user");
+                return;
+            }
+            currentUser = user;
 
-            // --- RENDER FUNCTIONS ---
-            const renderConversationsList = () => {
-                conversationsList.innerHTML = '';
-                Object.keys(conversations).forEach(userId => {
-                    const user = users[userId];
-                    const convo = conversations[userId];
-                    const lastMessage = convo.messages.slice(-1)[0];
-                    
-                    const convoItem = document.createElement('div');
-                    convoItem.className = 'conversation-item';
-                    convoItem.dataset.userId = userId;
+            const { data: profile, error } = await supabase
+                .from("profiles")
+                .select("full_name, avatar_url, title")
+                .eq("id", user.id) 
+                .single();
 
-                    convoItem.innerHTML = `
-                        <div class="convo-avatar-wrapper">
-                            <img src="https://picsum.photos/seed/${userId}/50" alt="${user.name}" class="convo-avatar">
-                            ${user.online ? '<div class="status-dot"></div>' : ''}
-                        </div>
-                        <div class="convo-details">
-                            <div class="convo-header">
-                                <h4>${user.name}</h4>
-                                <span>${convo.last_updated}</span>
-                            </div>
-                            <p>${lastMessage.text}</p>
-                        </div>
-                    `;
-                    conversationsList.appendChild(convoItem);
-                });
-            };
+            if (error) {
+                console.error("Error loading profile:", error.message);
+                return;
+            }
             
-            const renderChat = (userId) => {
-                const user = users[userId];
-                const convo = conversations[userId];
+            document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
+            document.getElementById("s-title").textContent = profile.title || "";
+            document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
 
-                chatPanel.innerHTML = `
-                    <div class="chat-header">
-                        <img src="https://picsum.photos/seed/${userId}/40" alt="${user.name}">
-                        <h3>${user.name}</h3>
-                    </div>
-                    <div class="chat-messages" id="chat-messages"></div>
-                    <form class="chat-input-form" id="chat-form" data-user-id="${userId}">
-                        <textarea placeholder="Type a message..." required rows="1"></textarea>
-                        <button type="submit">Send</button>
-                    </form>
-                `;
-                
-                const messageContainer = document.getElementById('chat-messages');
-                let lastSender = null;
-                convo.messages.forEach(msg => {
-                    const isGrouped = msg.sender === lastSender;
-                    appendMessage(messageContainer, msg.text, msg.sender === 'me' ? 'sent' : 'received', isGrouped);
-                    lastSender = msg.sender;
+            loadChats();
+            subscribeToChats();
+        }
+        loadProfile();
+
+        const conversationsList = document.getElementById('conversations-list');
+        const chatPanel = document.getElementById('chat-panel');
+        const detailsPanel = document.getElementById('details-panel');
+
+        async function loadChats() {
+            const { data, error } = await supabase
+                .from("chats")
+                .select("id, sender_id, receiver_id, message, created_at, sender:sender_id(full_name, title, avatar_url), receiver:receiver_id(full_name, title, avatar_url)")
+                .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+                .order("created_at", { ascending: true });
+
+            if (error) {
+                console.error("Error loading chats:", error.message);
+                return;
+            }
+
+            data.forEach(chat => {
+                const otherUser = chat.sender_id === currentUser.id ? chat.receiver : chat.sender;
+                const otherUserId = chat.sender_id === currentUser.id ? chat.receiver_id : chat.sender_id;
+
+                if (!users[otherUserId]) {
+                    users[otherUserId] = { 
+                        name: otherUser.full_name, 
+                        title: otherUser.title, 
+                        avatar: otherUser.avatar_url, 
+                        online: true 
+                    };
+                }
+
+                if (!conversations[otherUserId]) {
+                    conversations[otherUserId] = { last_updated: '', messages: [] };
+                }
+
+                conversations[otherUserId].messages.push({
+                    sender: chat.sender_id === currentUser.id ? 'me' : 'them',
+                    text: chat.message
                 });
-
-                messageContainer.scrollTop = messageContainer.scrollHeight;
-
-                detailsPanel.innerHTML = `
-                    <div class="details-content">
-                        <img src="https://picsum.photos/seed/${userId}/100" class="details-avatar" alt="${user.name}">
-                        <h3>${user.name}</h3>
-                        <p>${user.title}</p>
-                        <a href="#" class="details-link">View Profile</a>
-                    </div>
-                `;
-                
-                const form = document.getElementById('chat-form');
-                const textarea = form.querySelector('textarea');
-                form.addEventListener('submit', handleSendMessage);
-                textarea.addEventListener('input', autoResizeTextarea);
-                textarea.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        form.requestSubmit();
-                    }
-                });
-            };
-            
-            // --- HELPER FUNCTIONS ---
-            const appendMessage = (container, text, type, isGrouped) => {
-                const bubble = document.createElement('div');
-                bubble.className = `message-bubble ${type}`;
-                if (isGrouped) {
-                    bubble.classList.add('grouped');
-                }
-                bubble.textContent = text;
-                container.appendChild(bubble);
-                container.scrollTop = container.scrollHeight;
-            };
-
-            const handleSendMessage = (e) => {
-                e.preventDefault();
-                const form = e.target;
-                const textarea = form.querySelector('textarea');
-                const messageText = textarea.value.trim();
-                const userId = form.dataset.userId;
-
-                if (messageText) {
-                    const messageContainer = document.getElementById('chat-messages');
-                    const lastMessageEl = messageContainer.querySelector('.message-bubble:last-child');
-                    const isGrouped = lastMessageEl && lastMessageEl.classList.contains('sent');
-
-                    appendMessage(messageContainer, messageText, 'sent', isGrouped);
-                    conversations[userId].messages.push({ sender: 'me', text: messageText });
-                    textarea.value = '';
-                    textarea.style.height = 'auto'; // Reset height after sending
-                    
-                    // Simulate typing and reply for demo purposes
-                    setTimeout(() => {
-                        const typingIndicator = document.createElement('div');
-                        typingIndicator.className = 'typing-indicator';
-                        typingIndicator.textContent = `${users[userId].name.split(' ')[0]} is typing...`;
-                        messageContainer.appendChild(typingIndicator);
-                        messageContainer.scrollTop = messageContainer.scrollHeight;
-
-                        setTimeout(() => {
-                            messageContainer.removeChild(typingIndicator);
-                            const replyText = "That's interesting, tell me more!";
-                            const lastSentEl = messageContainer.querySelector('.message-bubble:last-child');
-                            const replyGrouped = lastSentEl && lastSentEl.classList.contains('received');
-                            appendMessage(messageContainer, replyText, 'received', replyGrouped);
-                            conversations[userId].messages.push({ sender: 'them', text: replyText });
-                        }, 2000);
-                    }, 500);
-                }
-            };
-
-            const autoResizeTextarea = (e) => {
-                const textarea = e.target;
-                textarea.style.height = 'auto';
-                textarea.style.height = `${textarea.scrollHeight}px`;
-            };
-            
-            // --- EVENT LISTENERS ---
-            conversationsList.addEventListener('click', (e) => {
-                const target = e.target.closest('.conversation-item');
-                if (target) {
-                    const userId = target.dataset.userId;
-                    // Visually mark the active conversation
-                    document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
-                    target.classList.add('active');
-                    // Render the chat for the selected user
-                    renderChat(userId);
-                }
+                conversations[otherUserId].last_updated = new Date(chat.created_at).toLocaleTimeString();
             });
 
-            // --- INITIALIZATION ---
             renderConversationsList();
+        }
+
+        function subscribeToChats() {
+            supabase
+                .channel("realtime-chats")
+                .on(
+                    "postgres_changes", 
+                    { event: "INSERT", schema: "public", table: "chats" }, 
+                    payload => {
+                        const chat = payload.new;
+                        if (chat.sender_id !== currentUser.id && chat.receiver_id !== currentUser.id) return;
+
+                        const otherUserId = chat.sender_id === currentUser.id ? chat.receiver_id : chat.sender_id;
+
+                        if (!conversations[otherUserId]) {
+                            conversations[otherUserId] = { last_updated: '', messages: [] };
+                        }
+                        conversations[otherUserId].messages.push({
+                            sender: chat.sender_id === currentUser.id ? 'me' : 'them',
+                            text: chat.message
+                        });
+                        conversations[otherUserId].last_updated = new Date(chat.created_at).toLocaleTimeString();
+
+                        const activeChat = document.querySelector(".conversation-item.active");
+                        if (activeChat && activeChat.dataset.userId == otherUserId) {
+                            renderChat(otherUserId);
+                        }
+                        renderConversationsList();
+                    }
+                )
+                .subscribe();
+        }
+
+        const renderConversationsList = () => {
+            conversationsList.innerHTML = '';
+            Object.keys(conversations).forEach(userId => {
+                const user = users[userId];
+                const convo = conversations[userId];
+                const lastMessage = convo.messages.slice(-1)[0];
+                
+                const convoItem = document.createElement('div');
+                convoItem.className = 'conversation-item';
+                convoItem.dataset.userId = userId;
+
+                convoItem.innerHTML = `
+                    <div class="convo-avatar-wrapper">
+                        <img src="${user.avatar || `https://picsum.photos/seed/${userId}/50`}" alt="${user.name}" class="convo-avatar">
+                        ${user.online ? '<div class="status-dot"></div>' : ''}
+                    </div>
+                    <div class="convo-details">
+                        <div class="convo-header">
+                            <h4>${user.name}</h4>
+                            <span>${convo.last_updated}</span>
+                        </div>
+                        <p>${lastMessage.text}</p>
+                    </div>
+                `;
+                conversationsList.appendChild(convoItem);
+            });
+        };
+        
+        const renderChat = (userId) => {
+            const user = users[userId];
+            const convo = conversations[userId];
+
+            chatPanel.innerHTML = `
+                <div class="chat-header">
+                    <img src="${user.avatar || `https://picsum.photos/seed/${userId}/40`}" alt="${user.name}">
+                    <h3>${user.name}</h3>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-form" id="chat-form" data-user-id="${userId}">
+                    <textarea placeholder="Type a message..." required rows="1"></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            `;
+            
+            const messageContainer = document.getElementById('chat-messages');
+            let lastSender = null;
+            convo.messages.forEach(msg => {
+                const isGrouped = msg.sender === lastSender;
+                appendMessage(messageContainer, msg.text, msg.sender === 'me' ? 'sent' : 'received', isGrouped);
+                lastSender = msg.sender;
+            });
+
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            detailsPanel.innerHTML = `
+                <div class="details-content">
+                    <img src="${user.avatar || `https://picsum.photos/seed/${userId}/100`}" class="details-avatar" alt="${user.name}">
+                    <h3>${user.name}</h3>
+                    <p>${user.title}</p>
+                    <a href="#" class="details-link">View Profile</a>
+                </div>
+            `;
+            
+            const form = document.getElementById('chat-form');
+            const textarea = form.querySelector('textarea');
+            form.addEventListener('submit', handleSendMessage);
+            textarea.addEventListener('input', autoResizeTextarea);
+            textarea.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    form.requestSubmit();
+                }
+            });
+        };
+        
+        const appendMessage = (container, text, type, isGrouped) => {
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${type}`;
+            if (isGrouped) {
+                bubble.classList.add('grouped');
+            }
+            bubble.textContent = text;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        };
+
+        const handleSendMessage = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const textarea = form.querySelector('textarea');
+            const messageText = textarea.value.trim();
+            const userId = form.dataset.userId;
+
+            if (messageText) {
+                const messageContainer = document.getElementById('chat-messages');
+                const lastMessageEl = messageContainer.querySelector('.message-bubble:last-child');
+                const isGrouped = lastMessageEl && lastMessageEl.classList.contains('sent');
+
+                appendMessage(messageContainer, messageText, 'sent', isGrouped);
+                conversations[userId].messages.push({ sender: 'me', text: messageText });
+                textarea.value = '';
+                textarea.style.height = 'auto';
+
+                const { error } = await supabase.from("chats").insert({
+                    sender_id: currentUser.id,
+                    receiver_id: userId,
+                    message: messageText
+                });
+                if (error) console.error("Error sending message:", error.message);
+            }
+            
+        };
+
+        const autoResizeTextarea = (e) => {
+            const textarea = e.target;
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        };
+        
+        conversationsList.addEventListener('click', (e) => {
+            const target = e.target.closest('.conversation-item');
+            if (target) {
+                const userId = target.dataset.userId;
+                document.querySelectorAll('.conversation-item').forEach(item => item.classList.remove('active'));
+                target.classList.add('active');
+                renderChat(userId);
+            }
         });
-    </script>
+    });
+</script>
 </body>
 </html>
