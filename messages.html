@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages - AlumniConnect</title>
+    <title>Messages - CampusConnect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js"></script>
 
     <style>
-        /* 1. GLOBAL STYLES & SETUP */
         *, *::before, *::after {
           margin: 0;
           padding: 0;
@@ -39,13 +38,12 @@
           background-image: 
             radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
             radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
-          overflow: hidden; /* Prevents the main page from scrolling */
+          overflow: hidden; 
         }
 
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* 2. COLLAPSIBLE SIDEBAR STYLES */
         .sidebar-left {
           position: fixed; 
           top: 0; 
@@ -137,7 +135,6 @@
           background-color: var(--color-primary-hover); 
         }
 
-        /* 3. MESSAGING INTERFACE LAYOUT */
         .messaging-wrapper {
           margin-left: var(--sidebar-collapsed-width);
           display: grid;
@@ -149,7 +146,6 @@
           margin-left: var(--sidebar-expanded-width);
         }
 
-        /* 4. CONVERSATIONS PANEL (LEFT) */
         .conversations-panel {
           display: flex; 
           flex-direction: column; 
@@ -242,7 +238,6 @@
           text-overflow: ellipsis; 
         }
 
-        /* 5. CHAT PANEL (MIDDLE) */
         .chat-panel { 
           display: flex; 
           flex-direction: column; 
@@ -362,7 +357,6 @@
           background: var(--color-primary-hover); 
         }
 
-        /* 6. DETAILS PANEL (RIGHT) */
         .details-panel { 
           border-left: 1px solid var(--color-border); 
           padding: 2rem; 
@@ -398,8 +392,8 @@
           text-decoration: underline; 
         }
         .profile-link {
-            text-decoration: none; /* remove underline */
-            display: block; /* makes the whole div clickable */
+            text-decoration: none; 
+            display: block; 
         }
 
         .profile-toggle {
@@ -447,11 +441,11 @@
                     </svg>
                     <span>Cupid</span>
                 </a></li>
-                <li><a href="message.html" class="nav-link active">
+                <li><a href="messages.html" class="nav-link active">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
                   <span>Message</span>
                 </a></li>
-                <li><a href="#" class="nav-link">
+                <li><a href="alumani.html" class="nav-link">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
                     <span>Alumni</span>
                 </a></li>
@@ -520,7 +514,6 @@
             document.getElementById("s-title").textContent = profile.title || "";
             document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
 
-            // after profile is loaded, fetch chats
             loadChats();
             subscribeToChats();
         }
@@ -600,7 +593,6 @@
                 .subscribe();
         }
 
-        // --- RENDER FUNCTIONS ---
         const renderConversationsList = () => {
             conversationsList.innerHTML = '';
             Object.keys(conversations).forEach(userId => {
@@ -676,7 +668,6 @@
             });
         };
         
-        // --- HELPER FUNCTIONS ---
         const appendMessage = (container, text, type, isGrouped) => {
             const bubble = document.createElement('div');
             bubble.className = `message-bubble ${type}`;
@@ -705,7 +696,6 @@
                 textarea.value = '';
                 textarea.style.height = 'auto';
 
-                // insert into supabase
                 const { error } = await supabase.from("chats").insert({
                     sender_id: currentUser.id,
                     receiver_id: userId,
@@ -722,7 +712,6 @@
             textarea.style.height = `${textarea.scrollHeight}px`;
         };
         
-        // --- EVENT LISTENERS ---
         conversationsList.addEventListener('click', (e) => {
             const target = e.target.closest('.conversation-item');
             if (target) {
