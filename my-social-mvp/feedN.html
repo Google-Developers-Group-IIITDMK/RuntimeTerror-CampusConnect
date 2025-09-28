@@ -125,7 +125,7 @@
     <div class="sidebar-content">
         <nav class="sidebar-nav">
           <ul>
-            <li><a href="feed.html" class="nav-link">
+            <li><a href="feedN.html" class="nav-link">
                     <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
                     </svg>
@@ -172,14 +172,28 @@
             </header>
       
             <div class="p-8 space-y-6 -mx-8">
-              <div class="flex gap-4 p-4 backdrop-blur-sm bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4">
-                <img src="https://picsum.photos/seed/alexchen/100" class="w-12 h-12 rounded-full shrink-0" />
+              <div class="flex gap-4 p-4 backdrop-blur-md bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4">
+                <img id="post-profile"src="" class="w-12 h-12 rounded-full shrink-0" />
                 <div class="flex-1">
                   <textarea id="post-input" class="w-full resize-none bg-transparent focus:outline-none placeholder-gray-400 text-lg" placeholder="What's on your mind?"></textarea>
                   <div class="flex justify-between items-center mt-2">
-                    <button class="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
-                      <span>Attach</span>
-                    </button>
+                    <div class="image-preview-container">
+                      <!-- Preview (hidden until file selected) -->
+                      <img src="" 
+                          alt="File Preview" 
+                          class="image-preview rounded-lg" 
+                          id="file-preview" 
+                          style="display: none; width:70px; height:70px; object-fit:cover;" />
+
+                      <!-- Hidden file input -->
+                      <input type="file" id="fileInput" accept="image/*" style="display:none;" />
+
+                      <!-- Attach button -->
+                      <button id="attachBtn" 
+                              class="text-gray-400 hover:text-[var(--color-primary)] transition-colors">
+                        <span>Attach</span>
+                      </button>
+                    </div>
                     <button class="bg-[var(--color-primary)] text-white font-bold py-2 px-6 rounded-full hover:bg-[var(--color-primary-hover)] transition-opacity" id="post-btn">Post</button>
                   </div>
                 </div>
@@ -254,6 +268,36 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    let currentProfile = null;
+
+    async function loadProfile() {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            console.error("No logged in user");
+            return;
+        }
+
+        const { data: profile, error } = await supabase
+            .from("profiles")
+            .select("full_name, avatar_url, title")
+            .eq("id", user.id) 
+            .single();
+
+        if (error) {
+            console.error("Error loading profile:", error.message);
+            return;
+        }
+        
+        currentProfile = profile;
+        // Update DOM with fetched data
+        document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
+        document.getElementById("s-title").textContent = profile.title || "";
+        
+        document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
+        document.querySelector("#post-profile").src = profile.avatar_url || "default-avatar.png";
+    }
+    loadProfile();
+
     async function loadPosts() {
         const { data, error } = await supabase
         .from("posts")
@@ -275,7 +319,7 @@
         postElement.innerHTML = `<div class="p-6">
                 <div class="flex items-start justify-between">
                   <div class="flex items-center gap-4">
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("https://ui-avatars.com/api/?name=${post.username}&background=random");'></div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("${post.avatar_url || "default-avatar.png"}");'></div>
                     <div>
                       <p class="font-bold text-white">${post.username}</p>
                       <p class="text-sm text-gray-400">${new Date(post.created_at).toLocaleString()}</p>
@@ -305,13 +349,71 @@
   const feedContainer = document.querySelector('#posts'); 
   const textarea = document.querySelector('textarea');
 
+  // 📂 Attach button setup
+  const attachBtn = document.getElementById("attachBtn");
+  const fileInput = document.getElementById("fileInput");
+  const filePreview = document.getElementById("file-preview");
+
+  // Open file dialog
+  attachBtn.addEventListener("click", (e) => {
+    e.preventDefault(); // prevent accidental form submit
+    fileInput.click();
+  });
+
+  // Show preview
+  fileInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        filePreview.src = e.target.result;
+        filePreview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
   postButton.addEventListener('click', async() => {
     const text = textarea.value.trim();
-    if (!text) return;
+    if (!text || !currentProfile) return;
+
+    let imageUrl = null;
+
+    if (fileInput.files[0]) {
+      const file = fileInput.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `posts/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("post-images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true,   // ⚡ overwrite if same filename exists
+          contentType: file.type
+        });
+        console.log("Upload response:", uploadData, uploadError);
+
+      if (uploadError) {
+        console.error("Error uploading file:", uploadError);
+      } else {
+        // ✅ Get a public URL
+        const { data: publicUrlData } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+    }
 
     const { data, error } = await supabase
         .from('posts')
-        .insert([{ username: "You", content: text }]) 
+        .insert([{ 
+          username: currentProfile.full_name,
+          avatar_url: currentProfile.avatar_url || "default-avatar.png",
+          content: text,
+          image_url: imageUrl
+        }]) 
         .select(); 
 
     if (error) {
@@ -319,20 +421,22 @@
         return;
     }
 
+    const post = data[0];
     const postCard = document.createElement('div');
     postCard.className = 'backdrop-blur-md bg-white/10 rounded-xl overflow-hidden border border-gray-700/50 mb-4';
     postCard.innerHTML = `
           <div class="p-6">
             <div class="flex items-start justify-between">
               <div class="flex items-center gap-4">
-                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("https://ui-avatars.com/api/?name=You&background=random");'></div>
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" style='background-image: url("${post.avatar_url}");'></div>
                 <div>
-                  <p class="font-bold text-white">You</p>
+                  <p class="font-bold text-white">${post.username}</p>
                   <p class="text-sm text-gray-400">Just now</p>
                 </div>
               </div>
             </div>
-            <p class="mt-4 text-text-color">${text}</p>
+            <p class="mt-4 text-text-color">${post.content}</p>
+            ${post.image_url ? `<img src="${post.image_url}" class="rounded-lg mt-4 max-h-60 w-full object-cover"/>` : ""}
           </div>
           <div class="flex items-center gap-4 p-4 border-t border-gray-700/50">
             <button class="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors">
@@ -346,6 +450,8 @@
 
     feedContainer.prepend(postCard);
     textarea.value = '';
+    filePreview.style.display = "none"; // reset preview after posting
+    fileInput.value = ""; // reset file input
   });
 </script> 
 
