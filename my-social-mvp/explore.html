@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - CampusConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+
+    <style>
+        :root {
+          --color-background: #100E19;
+          --color-primary: #8A4FFF;
+          --background-dark: #0D0C14;
+          --color-primary-hover: #7B46E5;
+          --color-card-background: #1C1A27;
+          --color-border: #2A2836;
+          --text-primary: #EAEAEB;
+          --text-secondary: #9A9A9E;
+          --color-white: #FFFFFF;
+          --sidebar-collapsed-width: 90px;
+          --sidebar-expanded-width: 280px;
+        }
+        *, *::before, *::after {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+          font-family: 'Poppins', sans-serif;
+          color: var(--text-primary);
+          background-color: var(--color-background);
+          background-image: 
+            radial-gradient(circle at 15% 50%, rgba(138, 79, 255, 0.1), transparent 30%),
+            radial-gradient(circle at 85% 30%, rgba(138, 79, 255, 0.1), transparent 40%);
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        svg { vertical-align: middle; }
+
+        .sidebar-left { position: fixed; top: 0; left: 0; height: 100vh; background-color: var(--color-card-background); padding: 1.5rem; display: flex; flex-direction: column; z-index: 100; overflow: hidden; width: var(--sidebar-collapsed-width); transition: width 0.3s ease-in-out; border-right: 1px solid var(--color-border); }
+        .sidebar-left:hover { width: var(--sidebar-expanded-width); }
+        .profile-toggle { display: flex; align-items: center; gap: 1rem; height: 60px; flex-shrink: 0; }
+        .profile-info { opacity: 0; transition: opacity 0.2s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .profile-info { opacity: 1; }
+        .profile-avatar-main { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; flex-shrink: 0; padding: initial;}
+        .sidebar-content { margin-top: 2rem; flex-grow: 1; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s ease-in-out; white-space: nowrap; }
+        .sidebar-left:hover .sidebar-content { opacity: 1; }
+        .sidebar-nav { flex-grow: 1; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 12px; font-weight: 500; }
+        .nav-link.active { background-color: var(--color-primary); color: var(--color-white); }
+        .nav-link:hover { background-color: var(--color-border); }
+        .nav-link.active svg, .nav-link:hover svg { color: var(--color-white); }
+        .nav-link svg { color: var(--text-secondary); transition: color 0.2s; flex-shrink: 0; }
+        .btn-logout { background-color: var(--color-primary); color: var(--color-white); padding: 1rem; border-radius: 12px; font-weight: 600; text-align: center; }
+        .btn-logout:hover { background-color: var(--color-primary-hover); }
+
+        .main-wrapper {
+          margin-left: var(--sidebar-collapsed-width);
+          padding: 2rem;
+          transition: margin-left 0.3s ease-in-out;
+        }
+        .sidebar-left:hover ~ .main-wrapper {
+          margin-left: var(--sidebar-expanded-width);
+        }
+        .explore-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 1024px) {
+            .explore-container { grid-template-columns: minmax(0, 3fr) 1fr; }
+        }
+        .explore-main { display: flex; flex-direction: column; gap: 2.5rem; }
+        .explore-sidebar-sticky { position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-header { margin-bottom: 1.5rem; }
+        .section-header h2 { font-size: 1.5rem; font-weight: 600; }
+        .section-header p { color: var(--text-secondary); }
+
+        
+        .events-scroller { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: none; }
+        .events-scroller::-webkit-scrollbar { display: none; }
+        .event-card {
+            background-color: var(--color-card-background);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            flex: 0 0 300px; 
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .event-image { height: 140px; background-size: cover; background-position: center; }
+        .event-info { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .event-info h3 { font-weight: 600; }
+        .event-meta { display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; }
+        .live-badge { background-color: var(--color-danger); color: white; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; }
+
+        .trending-tags { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .trending-tag { background-color: var(--color-card-background); border: 1px solid var(--color-border); padding: 0.75rem 1.25rem; border-radius: 99px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
+        .trending-tag:hover { background-color: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+        .trending-tag span { color: var(--text-secondary); margin-right: 0.5rem; }
+
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .project-card { background-color: var(--color-card-background); border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; }
+        .project-card-image { height: 160px; background-size: cover; background-position: center; }
+        .project-card-content { padding: 1rem; }
+        .project-card-content h3 { font-weight: 600; margin-bottom: 0.25rem; }
+        .project-card-content p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .project-tag { background-color: var(--color-border); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 6px; }
+
+        .widget-card { background-color: var(--color-card-background); border: 1px solid var(--color-border); border-radius: 16px; padding: 1.5rem; }
+        .widget-card h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+        .club-list li:not(:last-child) { border-bottom: 1px solid var(--color-border); }
+        .club-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 0.5rem; }
+        .club-item-logo { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+        .club-item-info { flex-grow: 1; }
+        .club-item-info h4 { font-weight: 500; }
+        .club-item-info p { font-size: 0.85rem; color: var(--text-secondary); }
+        .btn-view { background: var(--color-border); color: var(--text-primary); font-weight: 500; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.2s; }
+        .btn-view:hover { background: var(--color-primary); color: var(--color-white); }
+
+        .profile-link {
+            text-decoration: none; 
+            display: block; 
+        }
+
+        .profile-toggle {
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-toggle:hover {
+            background-color: #646464; 
+            cursor: pointer;
+        }
+        .events-scroller {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 8px;
+        }
+
+        .event-card {
+        flex: 0 0 auto;
+        width: 300px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #1f1f1f;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        }
+
+        .event-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+
+        .event-image {
+        width: 100%;
+        height: 140px;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.3s ease;
+        }
+
+        .event-card:hover .event-image {
+        transform: scale(1.1);
+        }
+
+        .event-info {
+        padding: 12px;
+        }
+
+        .event-info h3 {
+        margin: 0 0 6px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        }
+
+        .event-meta {
+        display: flex;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #ccc;
+        }
+
+        .live-badge {
+        background: #f42547;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        }
+        .projects-grid {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 12px 0;
+        }
+
+        .project-card {
+        flex: 0 0 auto;
+        width: 300px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #1f1f1f;
+        color: white;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        }
+
+        .project-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+        }
+
+        .project-card-image {
+        width: 100%;
+        height: 140px;
+        background-size: cover;
+        background-position: center;
+        }
+
+        .project-card-content {
+        padding: 12px;
+        }
+
+        .project-card-content h3 {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        }
+
+        .project-card-content p {
+        margin: 0 0 6px 0;
+        font-size: 0.9rem;
+        color: #ccc;
+        }
+
+        .project-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        }
+
+        .project-tag {
+        background: var(--color-primary);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        }
+    </style>
+    <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "var(--primary-color)",
+            "secondary": "var(--secondary-color)",
+            "background-dark": "var(--background-dark)",
+            "card-bg": "var(--card-bg)",
+            "text-color": "var(--text-color)",
+            "background-light": "#f6f7f8",
+          },
+          fontFamily: {
+            "display": ["Manrope"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+    </script>
+</head>
+<body>
+    <aside id="sidebar" class="sidebar-left">
+        <a href="profileN.html" class="profile-link">
+            <div class="profile-toggle">
+                <img id="s-img" src="" alt="Profile pic" class="profile-avatar-main">
+                <div class="profile-info">
+                <h3 id="s-name" class="profile-name"></h3>
+                <p id = "s-title" class="profile-title"></p>
+                </div>
+            </div>
+        </a>
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+              <ul>
+                <li><a href="feedN.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                    </svg>
+                    <span>Feed</span>
+                </a></li>
+                <li><a href="explore.html" class="nav-link active">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                    <span>Explore</span>
+                </a></li>
+                <li><a href="cupid.html" class="nav-link">
+                    <svg class="shrink-0" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M128,216a8,8,0,0,1-5.66-2.34C58.34,159.4,24,129.74,24,96A64,64,0,0,1,128,32a64,64,0,0,1,104,64c0,33.74-34.34,63.4-98.34,117.66A8,8,0,0,1,128,216Z"></path>
+                    </svg>
+                    <span>Cupid</span>
+                </a></li>
+                <li><a href="messages.html" class="nav-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6l-10 7L2 6"/></g></svg>
+                  <span>Message</span>
+                </a></li>
+                <li><a href="alumani.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg>
+                    <span>Networking</span>
+                </a></li>
+                <li><a href="code-connect.html" class="nav-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m16 18l6-6l-6-6"/><path d="m8 6l-6 6l6 6"/></g></svg>
+                    <span>Code & Connect</span>
+                </a></li>
+              </ul>
+            </nav>
+            <a href="loginN.html" class="btn-logout">Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <div class="explore-container">
+            <main class="explore-main">
+                <h1 class="bg-background-dark/80 backdrop-blur-sm px-4 py-2 rounded">Explore Campus</h1>
+                
+                <section>
+                    <div class="section-header">
+                        <h2>Happening Now 🔴</h2>
+                        <p>Live events and workshops around you.</p>
+                    </div>
+                    <div class="events-scroller">
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/robotics/400/200');"></div>
+                            <div class="event-info">
+                                <h3>Robotics Workshop</h3>
+                                <div class="event-meta">
+                                    <span class="live-badge">LIVE</span>
+                                    <span>Mech Block, Room 301</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://fastly.picsum.photos/id/260/400/200.jpg?hmac=ILYhjfknsF_TgNt2biB7oCiUlonzOTClLOsHMoBSidM');"></div>
+                            <div class="event-info">
+                                <h3>GDG </h3>
+                                <div class="event-meta">
+                                    <span class="live-badge">LIVE</span>
+                                    <span>Seminar Hall Complex</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/music/400/200');"></div>
+                            <div class="event-info">
+                                <h3>Open Mic Night</h3>
+                                <div class="event-meta">
+                                    <span>Tonight, 7 PM @ OAT</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <div class="event-image" style="background-image: url('https://picsum.photos/seed/startup/400/200');"></div>
+                            <div class="event-info">
+                                <h3>E-Cell Startup Pitch</h3>
+                                <div class="event-meta">
+                                    <span>Tomorrow, 10 AM @ Main Audi</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-header">
+                        <h2>Trending on Campus 🔥</h2>
+                        <p>See what everyone's talking about.</p>
+                    </div>
+                    <div class="trending-tags">
+                        <a href="#" class="trending-tag"><span>#</span>TechFest2025</a>
+                        <a href="#" class="trending-tag"><span>#</span>ExamWeek</a>
+                        <a href="#" class="trending-tag"><span>#</span>Placements</a>
+                        <a href="#" class="trending-tag"><span>#</span>MessFoodChronicles</a>
+                        <a href="#" class="trending-tag"><span>#</span>Confessions</a>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="section-header">
+                        <h2>Project Showcase 🚀</h2>
+                        <p>Amazing projects built by your peers.</p>
+                    </div>
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project1/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>AI-Powered Note Summarizer</h3>
+                                <p>By Aisha Khan</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#ML</span>
+                                    <span class="project-tag">#Python</span>
+                                    <span class="project-tag">#NLP</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project2/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>Campus Navigation App</h3>
+                                <p>By Rohan Gupta</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#React</span>
+                                    <span class="project-tag">#Firebase</span>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="project-card">
+                            <div class="project-card-image" style="background-image: url('https://picsum.photos/seed/project3/400/200');"></div>
+                            <div class="project-card-content">
+                                <h3>Automated Plant Watering System</h3>
+                                <p>By Vikram Singh</p>
+                                <div class="project-tags">
+                                    <span class="project-tag">#IoT</span>
+                                    <span class="project-tag">#Arduino</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+            <aside class="explore-sidebar">
+                <div class="explore-sidebar-sticky">
+                    <div class="widget-card">
+                        <h2>Clubs & Groups</h2>
+                        <ul class="club-list">
+                            <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/gdgclub/60" class="club-item-logo" alt="GDG Logo">
+                                    <div class="club-item-info">
+                                        <h4>GDG Tech Club</h4>
+                                        <p>120 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/musicclub/60" class="club-item-logo" alt="Music Club Logo">
+                                    <div class="club-item-info">
+                                        <h4>Symphony Music Club</h4>
+                                        <p>85 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="#" class="club-item">
+                                    <img src="https://picsum.photos/seed/sportsclub/60" class="club-item-logo" alt="Sports Club Logo">
+                                    <div class="club-item-info">
+                                        <h4>Spartans Sports Club</h4>
+                                        <p>250 Members</p>
+                                    </div>
+                                    <span class="btn-view">View</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const supabaseUrl = "https://pbuyszhhtmgaubzylmoh.supabase.co"; 
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBidXlzemhodG1nYXVienlsbW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4MDMyMDgsImV4cCI6MjA3NDM3OTIwOH0.EH7VsDZJWltw5c-dMkRab6-85ERhprXJ9uKAocco_jA"; // replace with your anon key
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function loadProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                console.error("No logged in user");
+                return;
+            }
+
+            const { data: profile, error } = await supabase
+                .from("profiles")
+                .select("full_name, avatar_url, title")
+                .eq("id", user.id) 
+                .single();
+
+            if (error) {
+                console.error("Error loading profile:", error.message);
+                return;
+            }
+            
+            document.getElementById("s-name").textContent = profile.full_name || "Unnamed User";
+            document.getElementById("s-title").textContent = profile.title || "";
+            
+            document.querySelector(".profile-avatar-main").src = profile.avatar_url || "default-avatar.png";
+        }
+        loadProfile();
+      });
+    </script>
+</body>
+</html>
